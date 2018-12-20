@@ -2,7 +2,7 @@
 
 namespace CookBook.Domain.Models
 {
-    public class ApplicationUser : IdentityUser
+    public class ApplicationUser : IdentityUser<int>
     {
         public virtual UserProfile UserProfile { get; set; }
     }

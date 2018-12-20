@@ -150,7 +150,7 @@ namespace CookBook.Domain.Helpers
                 .HasOne(v => v.User)
                 .WithMany(u => u.Votes)
                 .HasForeignKey(v => v.UserId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<RecipeTag>()
                 .HasOne(rt => rt.Recipe)

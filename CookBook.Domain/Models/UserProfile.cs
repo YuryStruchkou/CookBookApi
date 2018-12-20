@@ -4,7 +4,7 @@ namespace CookBook.Domain.Models
 {
     public class UserProfile
     {
-        public string UserId { get; set; }
+        public int UserId { get; set; }
 
         public virtual ApplicationUser ApplicationUser { get; set; }
 

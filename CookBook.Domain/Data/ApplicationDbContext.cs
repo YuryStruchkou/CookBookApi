@@ -1,11 +1,12 @@
 ﻿using CookBook.Domain.Helpers;
 using CookBook.Domain.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace CookBook.Domain.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<int>, int>
     {
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<UserStatus> UserStatuses { get; set; }
@@ -15,6 +16,8 @@ namespace CookBook.Domain.Data
         public DbSet<RecipeTag> RecipeTags { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Vote> Votes { get; set; }
+
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
