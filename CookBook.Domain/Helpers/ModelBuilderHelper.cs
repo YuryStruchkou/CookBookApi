@@ -1,4 +1,6 @@
-﻿using CookBook.Domain.Models;
+﻿using CookBook.CoreProject.Constants;
+using CookBook.Domain.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace CookBook.Domain.Helpers
@@ -163,6 +165,73 @@ namespace CookBook.Domain.Helpers
                 .WithMany(t => t.RecipeTags)
                 .HasForeignKey(rt => rt.RecipeId)
                 .OnDelete(DeleteBehavior.Cascade);
+        }
+
+        public static void SeedData(this ModelBuilder builder)
+        {
+            builder.SeedUserStatuses();
+            builder.SeedRecipeStatuses();
+            builder.SeedUserRoles();
+        }
+
+        public static void SeedUserStatuses(this ModelBuilder builder)
+        {
+            builder.Entity<UserStatus>()
+                .HasData(new UserStatus
+                {
+                    Id = 1,
+                    Name = DataConstants.UserStatusActive
+                });
+            builder.Entity<UserStatus>()
+                .HasData(new UserStatus
+                {
+                    Id = 2,
+                    Name = DataConstants.UserStatusPending
+                });
+            builder.Entity<UserStatus>()
+                .HasData(new UserStatus
+                {
+                    Id = 3,
+                    Name = DataConstants.UserStatusBlocked
+                });
+            builder.Entity<UserStatus>()
+                .HasData(new UserStatus
+                {
+                    Id = 4,
+                    Name = DataConstants.UserStatusDeleted
+                });
+        }
+
+        public static void SeedRecipeStatuses(this ModelBuilder builder)
+        {
+            builder.Entity<RecipeStatus>()
+                .HasData(new RecipeStatus
+                {
+                    Id = 1,
+                    Name = DataConstants.RecipeStatusActive
+                });
+            builder.Entity<RecipeStatus>()
+                .HasData(new RecipeStatus
+                {
+                    Id = 2,
+                    Name = DataConstants.RecipeStatusDeleted
+                });
+        }
+
+        public static void SeedUserRoles(this ModelBuilder builder)
+        {
+            builder.Entity<IdentityRole>()
+                .HasData(new IdentityRole
+                {
+                    Name = DataConstants.UserRoleAdmin,
+                    NormalizedName = DataConstants.UserRoleAdmin.ToUpper()
+                });
+            builder.Entity<IdentityRole>()
+                .HasData(new IdentityRole
+                {
+                    Name = DataConstants.UserRoleUser,
+                    NormalizedName = DataConstants.UserRoleUser.ToUpper()
+                });
         }
     }
 }

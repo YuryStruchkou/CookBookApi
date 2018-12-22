@@ -26,6 +26,7 @@ namespace CookBook.Domain.Data
             builder.SetupAlternateKeys();
             builder.SetupRequiredColumns();
             builder.SetupRelations();
+            builder.SeedData();
         }
     }
 }
