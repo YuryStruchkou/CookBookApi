@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
-namespace CookBook
+namespace CookBook.Presentation
 {
     public class Program
     {
@@ -12,6 +13,13 @@ namespace CookBook
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((context, config) =>
+                {
+                    var env = context.HostingEnvironment;
+                    config.AddJsonFile("appsettings.json", true)
+                        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true);
+                    config.AddEnvironmentVariables();
+                })
                 .UseStartup<Startup>();
     }
 }
