@@ -220,15 +220,17 @@ namespace CookBook.Domain.Helpers
 
         public static void SeedUserRoles(this ModelBuilder builder)
         {
-            builder.Entity<IdentityRole>()
-                .HasData(new IdentityRole
+            builder.Entity<IdentityRole<int>>()
+                .HasData(new IdentityRole<int>
                 {
+                    Id = 1,
                     Name = DataConstants.UserRoleAdmin,
                     NormalizedName = DataConstants.UserRoleAdmin.ToUpper()
                 });
-            builder.Entity<IdentityRole>()
-                .HasData(new IdentityRole
+            builder.Entity<IdentityRole<int>>()
+                .HasData(new IdentityRole<int>
                 {
+                    Id = 2,
                     Name = DataConstants.UserRoleUser,
                     NormalizedName = DataConstants.UserRoleUser.ToUpper()
                 });

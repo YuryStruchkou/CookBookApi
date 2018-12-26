@@ -241,27 +241,6 @@ namespace CookBook.Domain.Migrations
                     b.ToTable("Votes");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("ConcurrencyStamp");
-
-                    b.Property<string>("Name");
-
-                    b.Property<string>("NormalizedName");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("IdentityRole");
-
-                    b.HasData(
-                        new { Id = "c65ba031-a665-4d4a-aab8-5a7f8b21fa39", ConcurrencyStamp = "d47ba335-97ed-47e4-8fbe-0fdf800933cf", Name = "Admin", NormalizedName = "ADMIN" },
-                        new { Id = "52eb2333-1940-4889-92d8-0ea74d70c668", ConcurrencyStamp = "5e7a88ee-b071-4eb4-b5d4-629f298af0ae", Name = "User", NormalizedName = "USER" }
-                    );
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
                 {
                     b.Property<int>("Id")
@@ -285,6 +264,11 @@ namespace CookBook.Domain.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles");
+
+                    b.HasData(
+                        new { Id = 1, ConcurrencyStamp = "e7fa7b62-1446-4582-b707-4603f647eeb4", Name = "Admin", NormalizedName = "ADMIN" },
+                        new { Id = 2, ConcurrencyStamp = "e8271b65-8ac3-47c3-bacf-c0b77adf5627", Name = "User", NormalizedName = "USER" }
+                    );
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

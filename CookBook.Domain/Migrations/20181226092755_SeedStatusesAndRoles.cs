@@ -6,27 +6,13 @@ namespace CookBook.Domain.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "IdentityRole",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    NormalizedName = table.Column<string>(nullable: true),
-                    ConcurrencyStamp = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_IdentityRole", x => x.Id);
-                });
-
             migrationBuilder.InsertData(
-                table: "IdentityRole",
+                table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "c65ba031-a665-4d4a-aab8-5a7f8b21fa39", "d47ba335-97ed-47e4-8fbe-0fdf800933cf", "Admin", "ADMIN" },
-                    { "52eb2333-1940-4889-92d8-0ea74d70c668", "5e7a88ee-b071-4eb4-b5d4-629f298af0ae", "User", "USER" }
+                    { 1, "e7fa7b62-1446-4582-b707-4603f647eeb4", "Admin", "ADMIN" },
+                    { 2, "e8271b65-8ac3-47c3-bacf-c0b77adf5627", "User", "USER" }
                 });
 
             migrationBuilder.InsertData(
@@ -52,8 +38,15 @@ namespace CookBook.Domain.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "IdentityRole");
+            migrationBuilder.DeleteData(
+                table: "AspNetRoles",
+                keyColumns: new[] { "Id", "ConcurrencyStamp" },
+                keyValues: new object[] { 1, "e7fa7b62-1446-4582-b707-4603f647eeb4" });
+
+            migrationBuilder.DeleteData(
+                table: "AspNetRoles",
+                keyColumns: new[] { "Id", "ConcurrencyStamp" },
+                keyValues: new object[] { 2, "e8271b65-8ac3-47c3-bacf-c0b77adf5627" });
 
             migrationBuilder.DeleteData(
                 table: "RecipeStatuses",
