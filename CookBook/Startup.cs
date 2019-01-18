@@ -1,4 +1,4 @@
-﻿using CookBook.Domain.Data;
+﻿using CookBook.DAL.Data;
 using CookBook.Domain.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

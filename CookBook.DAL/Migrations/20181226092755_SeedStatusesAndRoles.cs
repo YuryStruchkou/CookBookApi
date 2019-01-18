@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace CookBook.Domain.Migrations
+namespace CookBook.DAL.Migrations
 {
     public partial class SeedStatusesAndRoles : Migration
     {
