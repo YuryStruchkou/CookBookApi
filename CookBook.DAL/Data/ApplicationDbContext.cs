@@ -1,10 +1,10 @@
-﻿using CookBook.Domain.Helpers;
-using CookBook.Domain.Models;
+﻿using CookBook.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using CookBook.CoreProject.Helpers;
 
-namespace CookBook.Domain.Data
+namespace CookBook.DAL.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<int>, int>
     {

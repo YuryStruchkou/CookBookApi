@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CookBook.DAL\CookBook.DAL.csproj" />
+    <ProjectReference Include="..\CookBook.Queries\CookBook.Queries.csproj" />
   </ItemGroup>
 
 </Project>

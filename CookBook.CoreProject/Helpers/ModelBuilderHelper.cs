@@ -3,9 +3,9 @@ using CookBook.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace CookBook.Domain.Helpers
+namespace CookBook.CoreProject.Helpers
 {
-    static class ModelBuilderHelper
+    public static class ModelBuilderHelper
     {
         public static void SetupPrimaryKeys(this ModelBuilder builder)
         {
