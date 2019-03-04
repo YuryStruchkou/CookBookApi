@@ -1,4 +1,7 @@
-﻿using CookBook.Domain.Models;
+﻿using System;
+using System.Threading.Tasks;
+using CookBook.Domain.Models;
+using CookBook.Domain.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,9 +22,16 @@ namespace CookBook.Presentation.Controllers
             _signInManager = signInManager;
         }
 
-        public JsonResult Register()
+        [HttpPost, Route("register"), AllowAnonymous]
+        public async Task<JsonResult> Register([FromBody]RegistrationViewModel model)
         {
-            return null;
+            var user = new ApplicationUser
+            {
+                Email = model.Email,
+                UserName = model.Username
+            };
+            var result = await _userManager.CreateAsync(user, model.Password);
+            return new JsonResult(user);
         }
     }
 }
