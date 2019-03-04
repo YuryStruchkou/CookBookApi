@@ -23,7 +23,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CookBook.CoreProject", "CookBook.CoreProject\CookBook.CoreProject.csproj", "{57CDEC73-2335-41A4-91DD-1B0A6432A961}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CookBook.Queries", "CookBook.Queries\CookBook.Queries.csproj", "{19E7B453-501F-4980-B0AC-27A2F7529978}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CookBook.Queries", "CookBook.Queries\CookBook.Queries.csproj", "{19E7B453-501F-4980-B0AC-27A2F7529978}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{CEEA7231-F1BD-4CDD-A7AB-B2F50D4E6652}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
