@@ -11,7 +11,7 @@ namespace CookBook.Domain.ViewModels
 
         [Required]
         [Display(Name = "Username")]
-        public string Username { get; set; }
+        public string UserName { get; set; }
 
         [Required]
         [Display(Name = "Password")]

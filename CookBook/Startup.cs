@@ -1,4 +1,5 @@
-﻿using CookBook.CoreProject.Helpers;
+﻿using AutoMapper;
+using CookBook.CoreProject.Helpers;
 using CookBook.DAL.Data;
 using CookBook.Domain.Models;
 using Microsoft.AspNetCore.Builder;
@@ -29,6 +30,7 @@ namespace CookBook.Presentation
             services.AddJwtAuthentication(Configuration);
             services.AddIdentity<ApplicationUser, IdentityRole<int>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddAutoMapper();
             services.AddMvc();
         }
 

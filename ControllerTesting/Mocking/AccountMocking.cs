@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using AutoMapper;
+using CookBook.Domain.Mappers;
 using CookBook.Domain.Models;
 using CookBook.Presentation.Controllers;
 using Microsoft.AspNetCore.Authentication;
@@ -18,7 +20,8 @@ namespace ControllerTesting.Mocking
         {
             var userManager = MockUserManager().Object;
             var signInManager = MockSingInManager(userManager).Object;
-            return new AccountController(userManager, signInManager);
+            var mapper = SetupMapper();
+            return new AccountController(userManager, signInManager, mapper);
         }
 
         private Mock<UserManager<ApplicationUser>> MockUserManager()
@@ -44,6 +47,12 @@ namespace ControllerTesting.Mocking
                 new Mock<ILogger<SignInManager<ApplicationUser>>>().Object,
                 new Mock<IAuthenticationSchemeProvider>().Object);
             return manager;
+        }
+
+        private IMapper SetupMapper()
+        {
+            var config = new MapperConfiguration(c => c.AddProfile<AccountProfile>());
+            return config.CreateMapper();
         }
     }
 }
