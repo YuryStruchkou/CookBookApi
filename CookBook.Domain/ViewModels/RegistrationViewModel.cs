@@ -6,7 +6,7 @@ namespace CookBook.Domain.ViewModels
     {
         [Required]
         [Display(Name = "Email")]
-        [DataType(DataType.EmailAddress)]
+        [EmailAddress(ErrorMessage = "Invalid email format.")]
         public string Email { get; set; }
 
         [Required]
@@ -21,7 +21,7 @@ namespace CookBook.Domain.ViewModels
         [Required]
         [Display(Name = "Confirm password")]
         [DataType(DataType.Password)]
-        [Compare(nameof(Password), ErrorMessage = "Passwords do not match")]
+        [Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
         public string ConfirmPassword { get; set; }
     }
 }

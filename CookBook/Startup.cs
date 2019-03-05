@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using CookBook.CoreProject.Helpers;
 using CookBook.DAL.Data;
 using CookBook.Domain.Models;
+using CookBook.Presentation.Filters;
+using CookBook.Presentation.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +27,7 @@ namespace CookBook.Presentation
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.OverrideDefaultModelValidation<ModelValidationAttribute>();
             services.AddJwtAuthentication(Configuration);
             services.AddIdentity<ApplicationUser, IdentityRole<int>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
