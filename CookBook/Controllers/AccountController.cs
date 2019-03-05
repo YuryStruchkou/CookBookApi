@@ -1,19 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
-using CookBook.CoreProject.Helpers;
-using CookBook.Domain.Enums;
 using CookBook.Domain.Models;
 using CookBook.Domain.ResultDtos;
-using CookBook.Domain.ViewModels;
+using CookBook.Domain.ResultDtos.AccountDtos;
+using CookBook.Domain.ViewModels.AccountViewModels;
 using CookBook.Presentation.Filters;
+using CookBook.Presentation.JWT;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace CookBook.Presentation.Controllers
 {
@@ -23,14 +19,14 @@ namespace CookBook.Presentation.Controllers
     public class AccountController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly JwtFactory _jwtFactory;
         private readonly IMapper _mapper;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IMapper mapper)
+        public AccountController(UserManager<ApplicationUser> userManager, IMapper mapper, JwtFactory jwtFactory)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
             _mapper = mapper;
+            _jwtFactory = jwtFactory;
         }
 
         [HttpPost, Route("register"), AllowAnonymous]
@@ -44,6 +40,29 @@ namespace CookBook.Presentation.Controllers
             }
             var resultDto = _mapper.Map<ApplicationUser, RegistrationResultDto>(user);
             return new OkObjectResult(resultDto);
+        }
+
+        [HttpPost, Route("login"), AllowAnonymous]
+        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
+        {
+            var user = await VerifyUser(model.UserNameOrEmail, model.Password);
+            if (user == null)
+            {
+                return new BadRequestObjectResult(new ErrorDto((int) HttpStatusCode.BadRequest, "Incorrect username and/or password."));
+            }
+            return new OkObjectResult(new LoginResultDto
+            {
+                JwtToken = _jwtFactory.GenerateEncodedToken()
+            });
+        }
+
+        private async Task<ApplicationUser> VerifyUser(string userNameOrEmail, string password)
+        {
+            var userToVerify = await _userManager.FindByEmailAsync(userNameOrEmail) ??
+                await _userManager.FindByNameAsync(userNameOrEmail);
+            return userToVerify != null && await _userManager.CheckPasswordAsync(userToVerify, password)
+                ? userToVerify
+                : null;
         }
     }
 }

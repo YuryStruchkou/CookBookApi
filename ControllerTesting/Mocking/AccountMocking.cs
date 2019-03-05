@@ -4,6 +4,7 @@ using AutoMapper;
 using CookBook.Domain.Mappers;
 using CookBook.Domain.Models;
 using CookBook.Presentation.Controllers;
+using CookBook.Presentation.JWT;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +23,13 @@ namespace ControllerTesting.Mocking
     {
         private List<ApplicationUser> _users = new List<ApplicationUser>();
 
+        private readonly ApplicationUser DefaultUser = new ApplicationUser
+        {
+            UserName = "user1",
+            Email = "user1@mailinator.com",
+            PasswordHash = "pass"
+        };
+
         public ActionExecutingContext SetupContext(AccountController controller)
         {
             return new ActionExecutingContext(new ControllerContext(new ActionContext(new Mock<HttpContext>().Object, new RouteData(),
@@ -31,9 +39,8 @@ namespace ControllerTesting.Mocking
         public AccountController SetupController()
         {
             var userManager = MockUserManager().Object;
-            var signInManager = MockSingInManager(userManager).Object;
             var mapper = SetupMapper();
-            return new AccountController(userManager, signInManager, mapper);
+            return new AccountController(userManager, mapper, new JwtFactory("https://localhost:44342/", "gyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"));
         }
 
         private Mock<UserManager<ApplicationUser>> MockUserManager()
@@ -43,33 +50,35 @@ namespace ControllerTesting.Mocking
             manager.Object.UserValidators.Add(new UserValidator<ApplicationUser>());
             manager.Object.PasswordValidators.Add(new PasswordValidator<ApplicationUser>());
 
-            manager.Setup(m => m.DeleteAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(IdentityResult.Success);
-            manager.Setup(m => m.UpdateAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(IdentityResult.Success);
+            MockRegistrationMethods(manager);
+            MockLoginMethods(manager);
 
+            return manager;
+        }
+
+        private void MockRegistrationMethods(Mock<UserManager<ApplicationUser>> manager)
+        {
             manager.Setup(m => m.CreateAsync(It.Is<ApplicationUser>(u => UserExists(u)), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Failed());
             manager.Setup(m => m.CreateAsync(It.Is<ApplicationUser>(u => !UserExists(u)), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Success)
                 .Callback<ApplicationUser, string>((user, password) => _users.Add(user));
+        }
 
-            return manager;
+        private void MockLoginMethods(Mock<UserManager<ApplicationUser>> manager)
+        {
+            manager.Setup(m => m.FindByNameAsync("user1"))
+                .ReturnsAsync(DefaultUser);
+            manager.Setup(m => m.FindByEmailAsync("user1@mailinator.com"))
+                .ReturnsAsync(DefaultUser);
+            manager.Setup(m => m.CheckPasswordAsync(DefaultUser, "pass"))
+                .ReturnsAsync(true);
         }
 
         private bool UserExists(ApplicationUser u)
         {
             return _users.Select(user => user.UserName.ToLower()).Any(name => name == u.UserName.ToLower())
                    || _users.Select(user => user.Email.ToLower()).Any(name => name == u.Email.ToLower());
-        }
-
-        private Mock<SignInManager<ApplicationUser>> MockSingInManager(UserManager<ApplicationUser> userManager)
-        {
-            var manager = new Mock<SignInManager<ApplicationUser>>(userManager,
-                new Mock<IHttpContextAccessor>().Object,
-                new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>().Object,
-                new Mock<IOptions<IdentityOptions>>().Object,
-                new Mock<ILogger<SignInManager<ApplicationUser>>>().Object,
-                new Mock<IAuthenticationSchemeProvider>().Object);
-            return manager;
         }
 
         private IMapper SetupMapper()

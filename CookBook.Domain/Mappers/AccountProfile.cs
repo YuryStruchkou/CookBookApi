@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using CookBook.Domain.Enums;
 using CookBook.Domain.Models;
-using CookBook.Domain.ResultDtos;
-using CookBook.Domain.ViewModels;
+using CookBook.Domain.ResultDtos.AccountDtos;
+using CookBook.Domain.ViewModels.AccountViewModels;
 
 namespace CookBook.Domain.Mappers
 {

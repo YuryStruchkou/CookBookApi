@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CookBook.Domain.ViewModels
+namespace CookBook.Domain.ViewModels.AccountViewModels
 {
     public class RegistrationViewModel
     {

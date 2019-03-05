@@ -3,6 +3,7 @@ using CookBook.DAL.Data;
 using CookBook.Domain.Models;
 using CookBook.Presentation.Filters;
 using CookBook.Presentation.Helpers;
+using CookBook.Presentation.JWT;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -29,6 +30,8 @@ namespace CookBook.Presentation
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.OverrideDefaultModelValidation<ModelValidationAttribute>();
             services.AddJwtAuthentication(Configuration);
+            services.AddScoped<JwtFactory>(sp =>
+                new JwtFactory(Configuration["Tokens:Issuer"], Configuration["Tokens:Key"]));
             services.AddIdentity<ApplicationUser, IdentityRole<int>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddAutoMapper();

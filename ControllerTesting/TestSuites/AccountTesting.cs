@@ -1,12 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using ControllerTesting.Helpers;
 using ControllerTesting.Mocking;
 using CookBook.CoreProject.Helpers;
 using CookBook.Domain.Enums;
 using CookBook.Domain.ResultDtos;
-using CookBook.Domain.ViewModels;
+using CookBook.Domain.ResultDtos.AccountDtos;
+using CookBook.Domain.ViewModels.AccountViewModels;
 using CookBook.Presentation.Controllers;
 using CookBook.Presentation.Filters;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +30,7 @@ namespace ControllerTesting.TestSuites
         [Fact]
         public async Task RegisterOk()
         {
-            var model = CreateDefaultTestViewModel();
+            var model = CreateDefaultRegisterViewModel();
 
             var json = (OkObjectResult)await _controller.Register(model);
             var data = (RegistrationResultDto)json.Value;
@@ -41,7 +41,7 @@ namespace ControllerTesting.TestSuites
             Assert.Equal((int) UserStatuses.Active, data.UserStatusId);
         }
 
-        private RegistrationViewModel CreateDefaultTestViewModel()
+        private RegistrationViewModel CreateDefaultRegisterViewModel()
         {
             return new RegistrationViewModel
             {
@@ -55,7 +55,7 @@ namespace ControllerTesting.TestSuites
         [Fact]
         public async Task RegisterUserExists()
         {
-            var model = CreateDefaultTestViewModel();
+            var model = CreateDefaultRegisterViewModel();
 
             await _controller.Register(model);
             var json = (ConflictObjectResult)await _controller.Register(model);
@@ -72,9 +72,15 @@ namespace ControllerTesting.TestSuites
         }
 
         [Fact]
+        public void LoginHasModelValidation()
+        {
+            Assert.True(AttributeHelper.IsModelValidationApplied(typeof(AccountController), "Login"));
+        }
+
+        [Fact]
         public void ValidateUserPasswordsDontMatch()
         {
-            var model = CreateDefaultTestViewModel();
+            var model = CreateDefaultRegisterViewModel();
             model.ConfirmPassword = "pass1";
             _context.ModelState.Validate(model);
 
@@ -94,7 +100,7 @@ namespace ControllerTesting.TestSuites
         [Fact]
         public void ValidateInvalidEmail()
         {
-            var model = CreateDefaultTestViewModel();
+            var model = CreateDefaultRegisterViewModel();
             model.Email = "user";
             _context.ModelState.Validate(model);
 
@@ -117,6 +123,59 @@ namespace ControllerTesting.TestSuites
             Assert.Contains("The Username field is required.", error.Errors);
             Assert.Contains("The Password field is required.", error.Errors);
             Assert.Contains("The Confirm password field is required.", error.Errors);
+        }
+
+        [Fact]
+        public async Task TestLoginWithUserNameOk()
+        {
+            var model = CreateDefaultLoginViewModel();
+            var json = (OkObjectResult)await _controller.Login(model);
+            var data = (LoginResultDto) json.Value;
+            AssertLoggedInSuccessfully(data);
+        }
+
+        private LoginViewModel CreateDefaultLoginViewModel()
+        {
+            return new LoginViewModel
+            {
+                UserNameOrEmail = "user1",
+                Password = "pass"
+            };
+        }
+
+        private void AssertLoggedInSuccessfully(LoginResultDto data)
+        {
+            Assert.NotNull(data.JwtToken);
+        }
+
+        [Fact]
+        public async Task TestLoginWithEmailOk()
+        {
+            var model = CreateDefaultLoginViewModel();
+            model.UserNameOrEmail = "user1@mailinator.com";
+            var json = (OkObjectResult)await _controller.Login(model);
+            var data = (LoginResultDto)json.Value;
+            AssertLoggedInSuccessfully(data);
+        }
+
+        [Fact]
+        public async Task TestLoginWithIncorrectPassword()
+        {
+            var model = CreateDefaultLoginViewModel();
+            model.Password = "*****************";
+            var json = (BadRequestObjectResult)await _controller.Login(model);
+            var error = (ErrorDto)json.Value;
+            Assert.Equal("Incorrect username and/or password.", error.Errors[0]);
+        }
+
+        [Fact]
+        public async Task TestLoginWithIncorrectUserName()
+        {
+            var model = CreateDefaultLoginViewModel();
+            model.UserNameOrEmail = "Incorrect username";
+            var json = (BadRequestObjectResult)await _controller.Login(model);
+            var error = (ErrorDto)json.Value;
+            Assert.Equal("Incorrect username and/or password.", error.Errors[0]);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace CookBook.Domain.ResultDtos
+﻿namespace CookBook.Domain.ResultDtos.AccountDtos
 {
     public class RegistrationResultDto
     {
