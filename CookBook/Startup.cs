@@ -30,6 +30,7 @@ namespace CookBook.Presentation
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.OverrideDefaultModelValidation<ModelValidationAttribute>();
             services.AddJwtAuthentication(Configuration);
+            services.AddAuthorizationPolicies();
             services.AddScoped<JwtFactory>(sp =>
                 new JwtFactory(Configuration["Tokens:Issuer"], Configuration["Tokens:Key"]));
             services.AddIdentity<ApplicationUser, IdentityRole<int>>()

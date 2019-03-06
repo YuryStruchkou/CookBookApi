@@ -180,25 +180,25 @@ namespace CookBook.CoreProject.Helpers
                 .HasData(new UserStatus
                 {
                     Id = 1,
-                    Name = DataConstants.UserStatusActive
+                    Name = UserStatusNames.Active
                 });
             builder.Entity<UserStatus>()
                 .HasData(new UserStatus
                 {
                     Id = 2,
-                    Name = DataConstants.UserStatusPending
+                    Name = UserStatusNames.Pending
                 });
             builder.Entity<UserStatus>()
                 .HasData(new UserStatus
                 {
                     Id = 3,
-                    Name = DataConstants.UserStatusBlocked
+                    Name = UserStatusNames.Blocked
                 });
             builder.Entity<UserStatus>()
                 .HasData(new UserStatus
                 {
                     Id = 4,
-                    Name = DataConstants.UserStatusDeleted
+                    Name = UserStatusNames.Deleted
                 });
         }
 
@@ -208,13 +208,13 @@ namespace CookBook.CoreProject.Helpers
                 .HasData(new RecipeStatus
                 {
                     Id = 1,
-                    Name = DataConstants.RecipeStatusActive
+                    Name = RecipeStatusNames.Active
                 });
             builder.Entity<RecipeStatus>()
                 .HasData(new RecipeStatus
                 {
                     Id = 2,
-                    Name = DataConstants.RecipeStatusDeleted
+                    Name = RecipeStatusNames.Deleted
                 });
         }
 
@@ -224,15 +224,15 @@ namespace CookBook.CoreProject.Helpers
                 .HasData(new IdentityRole<int>
                 {
                     Id = 1,
-                    Name = DataConstants.UserRoleAdmin,
-                    NormalizedName = DataConstants.UserRoleAdmin.ToUpper()
+                    Name = UserRoleNames.Admin,
+                    NormalizedName = UserRoleNames.Admin.ToUpper()
                 });
             builder.Entity<IdentityRole<int>>()
                 .HasData(new IdentityRole<int>
                 {
                     Id = 2,
-                    Name = DataConstants.UserRoleUser,
-                    NormalizedName = DataConstants.UserRoleUser.ToUpper()
+                    Name = UserRoleNames.User,
+                    NormalizedName = UserRoleNames.User.ToUpper()
                 });
         }
     }

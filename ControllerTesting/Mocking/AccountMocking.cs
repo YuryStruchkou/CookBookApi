@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using CookBook.CoreProject.Constants;
 using CookBook.Domain.Mappers;
 using CookBook.Domain.Models;
 using CookBook.Presentation.Controllers;
@@ -63,6 +64,8 @@ namespace ControllerTesting.Mocking
             manager.Setup(m => m.CreateAsync(It.Is<ApplicationUser>(u => !UserExists(u)), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Success)
                 .Callback<ApplicationUser, string>((user, password) => _users.Add(user));
+            manager.Setup(m => m.AddToRoleAsync(It.Is<ApplicationUser>(u => UserExists(u)), UserRoleNames.User))
+                .ReturnsAsync(IdentityResult.Success);
         }
 
         private void MockLoginMethods(Mock<UserManager<ApplicationUser>> manager)
@@ -73,6 +76,8 @@ namespace ControllerTesting.Mocking
                 .ReturnsAsync(DefaultUser);
             manager.Setup(m => m.CheckPasswordAsync(DefaultUser, "pass"))
                 .ReturnsAsync(true);
+            manager.Setup(m => m.GetRolesAsync(It.IsAny<ApplicationUser>()))
+                .ReturnsAsync(new List<string>());
         }
 
         private bool UserExists(ApplicationUser u)
