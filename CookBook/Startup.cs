@@ -1,8 +1,11 @@
-﻿using CookBook.DAL.Data;
+﻿using AutoMapper;
+using CookBook.DAL.Data;
 using CookBook.Domain.Models;
+using CookBook.Presentation.Filters;
+using CookBook.Presentation.Helpers;
+using CookBook.Presentation.JWT;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,8 +28,15 @@ namespace CookBook.Presentation
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.OverrideDefaultModelValidation<ModelValidationAttribute>();
+            services.AddJwtAuthentication(Configuration);
+            services.AddAuthorizationPolicies();
+            services.AddScoped<JwtFactory>(sp =>
+                new JwtFactory(Configuration["Tokens:Issuer"], Configuration["Tokens:Key"]));
             services.AddIdentity<ApplicationUser, IdentityRole<int>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddAutoMapper();
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,10 +47,8 @@ namespace CookBook.Presentation
                 app.UseDeveloperExceptionPage();
             }
 
-            app.Run(async (context) =>
-            {
-                await context.Response.WriteAsync("Hello World!");
-            });
+            app.UseAuthentication();
+            app.UseMvc();
         }
     }
 }
