@@ -146,6 +146,7 @@ namespace ControllerTesting.TestSuites
         private void AssertLoggedInSuccessfully(LoginResultDto data)
         {
             Assert.NotNull(data.JwtToken);
+            Assert.NotNull(data.UserName);
         }
 
         [Fact]

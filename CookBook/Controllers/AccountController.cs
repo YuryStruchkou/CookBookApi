@@ -60,7 +60,8 @@ namespace CookBook.Presentation.Controllers
             var claims = await GetClaimsIdentity(user);
             return new OkObjectResult(new LoginResultDto
             {
-                JwtToken = _jwtFactory.GenerateEncodedToken(claims, TokenLifetime)
+                JwtToken = _jwtFactory.GenerateEncodedToken(claims, TokenLifetime),
+                UserName = user.UserName
             });
         }
 

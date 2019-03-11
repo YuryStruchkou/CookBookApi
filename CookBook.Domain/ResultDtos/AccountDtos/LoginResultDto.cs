@@ -3,5 +3,6 @@
     public class LoginResultDto
     {
         public string JwtToken { get; set; }
+        public string UserName { get; set; }
     }
 }
