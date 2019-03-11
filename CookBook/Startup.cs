@@ -29,6 +29,7 @@ namespace CookBook.Presentation
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.OverrideDefaultModelValidation<ModelValidationAttribute>();
+            services.AddCors();
             services.AddJwtAuthentication(Configuration);
             services.AddAuthorizationPolicies();
             services.AddScoped<JwtFactory>(sp =>
@@ -47,6 +48,7 @@ namespace CookBook.Presentation
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             app.UseAuthentication();
             app.UseMvc();
         }
