@@ -1,19 +1,18 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
-using ControllerTesting.Helpers;
-using ControllerTesting.Mocking;
 using CookBook.CoreProject.Helpers;
 using CookBook.Domain.Enums;
 using CookBook.Domain.ResultDtos;
 using CookBook.Domain.ResultDtos.AccountDtos;
 using CookBook.Domain.ViewModels.AccountViewModels;
 using CookBook.Presentation.Controllers;
-using CookBook.Presentation.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Testing.Helpers;
+using Testing.Mocking;
 using Xunit;
 
-namespace ControllerTesting.TestSuites
+namespace Testing.TestSuites
 {
     public class AccountTesting
     {
@@ -23,7 +22,7 @@ namespace ControllerTesting.TestSuites
         public AccountTesting()
         {
             var mocker = new AccountMocking();
-            _controller = mocker.SetupController();
+            _controller = mocker.Setup();
             _context = mocker.SetupContext(_controller);
         }
 
@@ -84,17 +83,10 @@ namespace ControllerTesting.TestSuites
             model.ConfirmPassword = "pass1";
             _context.ModelState.Validate(model);
 
-            var error = ExecuteModelValidation();
+            var error = AttributeHelper.ExecuteModelValidation(_context);
 
             Assert.Equal((int)HttpStatusCode.BadRequest, error.Code);
             Assert.Equal("Passwords do not match.", error.Errors[0]);
-        }
-
-        private ErrorDto ExecuteModelValidation()
-        {
-            new ModelValidationAttribute().OnActionExecuting(_context);
-            var json = (BadRequestObjectResult)_context.Result;
-            return (ErrorDto)json.Value;
         }
 
         [Fact]
@@ -104,7 +96,7 @@ namespace ControllerTesting.TestSuites
             model.Email = "user";
             _context.ModelState.Validate(model);
 
-            var error = ExecuteModelValidation();
+            var error = AttributeHelper.ExecuteModelValidation(_context);
 
             Assert.Equal((int)HttpStatusCode.BadRequest, error.Code);
             Assert.Equal("Invalid email format.", error.Errors[0]);
@@ -116,7 +108,7 @@ namespace ControllerTesting.TestSuites
             var model = new RegistrationViewModel();
             _context.ModelState.Validate(model);
 
-            var error = ExecuteModelValidation();
+            var error = AttributeHelper.ExecuteModelValidation(_context);
 
             Assert.Equal((int)HttpStatusCode.BadRequest, error.Code);
             Assert.Contains("The Email field is required.", error.Errors);

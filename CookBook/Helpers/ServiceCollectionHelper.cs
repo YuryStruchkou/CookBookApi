@@ -2,7 +2,9 @@
 using System.Security.Claims;
 using System.Text;
 using AutoMapper;
+using CookBook.BLL.Services;
 using CookBook.CoreProject.Constants;
+using CookBook.CoreProject.Interfaces;
 using CookBook.Domain.Mappers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -64,7 +66,12 @@ namespace CookBook.Presentation.Helpers
 
         public static void AddAutoMapperProfiles(this IServiceCollection services)
         {
-            services.AddAutoMapper(typeof(AccountProfile));
+            services.AddAutoMapper(typeof(AccountProfile), typeof(RecipeProfile));
+        }
+
+        public static void RegisterCustomServices(this IServiceCollection services)
+        {
+            services.AddScoped<IRecipeService, RecipeService>();
         }
     }
 }

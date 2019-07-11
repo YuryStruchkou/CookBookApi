@@ -14,9 +14,9 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
 using Moq;
 
-namespace ControllerTesting.Mocking
+namespace Testing.Mocking
 {
-    class AccountMocking
+    class AccountMocking : BaseMocking<AccountController, AccountProfile>
     {
         private readonly List<ApplicationUser> _users = new List<ApplicationUser>();
 
@@ -33,7 +33,7 @@ namespace ControllerTesting.Mocking
                 new ControllerActionDescriptor())), new List<IFilterMetadata>(),  new Dictionary<string, object>(), controller);
         }
 
-        public AccountController SetupController()
+        public override AccountController Setup()
         {
             var userManager = MockUserManager().Object;
             var mapper = SetupMapper();
@@ -80,12 +80,6 @@ namespace ControllerTesting.Mocking
         {
             return _users.Select(user => user.UserName.ToLower()).Any(name => name == u.UserName.ToLower())
                    || _users.Select(user => user.Email.ToLower()).Any(name => name == u.Email.ToLower());
-        }
-
-        private IMapper SetupMapper()
-        {
-            var config = new MapperConfiguration(c => c.AddProfile<AccountProfile>());
-            return config.CreateMapper();
         }
     }
 }

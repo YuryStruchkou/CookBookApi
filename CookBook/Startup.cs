@@ -35,6 +35,7 @@ namespace CookBook.Presentation
                 new JwtFactory(Configuration["Tokens:Issuer"], Configuration["Tokens:Key"]));
             services.AddIdentity<ApplicationUser, IdentityRole<int>>(IdentityOptionsHelper.ConfigureIdentityOptions)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.RegisterCustomServices();
             services.AddAutoMapperProfiles();
             services.AddMvc();
         }
