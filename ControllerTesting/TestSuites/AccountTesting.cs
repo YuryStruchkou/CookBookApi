@@ -38,7 +38,7 @@ namespace ControllerTesting.TestSuites
             Assert.Equal(model.Email, data.Email);
             Assert.Equal(model.UserName, data.UserName);
             Assert.False(data.IsMuted);
-            Assert.Equal((int) UserStatuses.Active, data.UserStatusId);
+            Assert.Equal((int) UserStatus.Active, data.UserStatusId);
         }
 
         private RegistrationViewModel CreateDefaultRegisterViewModel()

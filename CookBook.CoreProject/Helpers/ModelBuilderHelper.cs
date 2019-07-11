@@ -1,4 +1,6 @@
-﻿using CookBook.CoreProject.Constants;
+﻿using System;
+using CookBook.CoreProject.Constants;
+using CookBook.Domain.Enums;
 using CookBook.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -36,18 +38,6 @@ namespace CookBook.CoreProject.Helpers
                 .Property(v => v.Id)
                 .ValueGeneratedOnAdd();
 
-            builder.Entity<UserStatus>()
-                .HasKey(s => s.Id);
-            builder.Entity<UserStatus>()
-                .Property(s => s.Id)
-                .ValueGeneratedOnAdd();
-
-            builder.Entity<RecipeStatus>()
-                .HasKey(s => s.Id);
-            builder.Entity<RecipeStatus>()
-                .Property(s => s.Id)
-                .ValueGeneratedOnAdd();
-
             builder.Entity<RecipeTag>()
                 .HasKey(rt => new { rt.RecipeId, rt.TagId });
         }
@@ -58,10 +48,6 @@ namespace CookBook.CoreProject.Helpers
                 .HasAlternateKey(t => t.Content);
             builder.Entity<Vote>()
                 .HasAlternateKey(v => new {v.RecipeId, v.UserId});
-            builder.Entity<UserStatus>()
-                .HasAlternateKey(s => s.Name);
-            builder.Entity<RecipeStatus>()
-                .HasAlternateKey(s => s.Name);
         }
 
         public static void SetupRequiredColumns(this ModelBuilder builder)
@@ -70,7 +56,7 @@ namespace CookBook.CoreProject.Helpers
                 .Property(u => u.IsMuted)
                 .IsRequired();
             builder.Entity<UserProfile>()
-                .Property(u => u.UserStatusId)
+                .Property(u => u.UserStatus)
                 .IsRequired();
 
             builder.Entity<Recipe>()
@@ -86,7 +72,7 @@ namespace CookBook.CoreProject.Helpers
                 .Property(r => r.CreationDate)
                 .IsRequired();
             builder.Entity<Recipe>()
-                .Property(r => r.RecipeStatusId)
+                .Property(r => r.RecipeStatus)
                 .IsRequired();
 
             builder.Entity<Comment>()
@@ -112,23 +98,11 @@ namespace CookBook.CoreProject.Helpers
                 .HasForeignKey<UserProfile>(up => up.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<UserProfile>()
-                .HasOne(u => u.UserStatus)
-                .WithMany(s => s.Users)
-                .HasForeignKey(u => u.UserStatusId)
-                .OnDelete(DeleteBehavior.Cascade);
-
             builder.Entity<Recipe>()
                 .HasOne(r => r.User)
                 .WithMany(u => u.Recipes)
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.SetNull);
-
-            builder.Entity<Recipe>()
-                .HasOne(r => r.RecipeStatus)
-                .WithMany(s => s.Recipes)
-                .HasForeignKey(r => r.RecipeStatusId)
-                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Comment>()
                 .HasOne(c => c.Recipe)
@@ -167,73 +141,14 @@ namespace CookBook.CoreProject.Helpers
                 .OnDelete(DeleteBehavior.Cascade);
         }
 
-        public static void SeedData(this ModelBuilder builder)
+        public static void SetupEnumConversions(this ModelBuilder builder)
         {
-            builder.SeedUserStatuses();
-            builder.SeedRecipeStatuses();
-            builder.SeedUserRoles();
-        }
-
-        public static void SeedUserStatuses(this ModelBuilder builder)
-        {
-            builder.Entity<UserStatus>()
-                .HasData(new UserStatus
-                {
-                    Id = 1,
-                    Name = UserStatusNames.Active
-                });
-            builder.Entity<UserStatus>()
-                .HasData(new UserStatus
-                {
-                    Id = 2,
-                    Name = UserStatusNames.Pending
-                });
-            builder.Entity<UserStatus>()
-                .HasData(new UserStatus
-                {
-                    Id = 3,
-                    Name = UserStatusNames.Blocked
-                });
-            builder.Entity<UserStatus>()
-                .HasData(new UserStatus
-                {
-                    Id = 4,
-                    Name = UserStatusNames.Deleted
-                });
-        }
-
-        public static void SeedRecipeStatuses(this ModelBuilder builder)
-        {
-            builder.Entity<RecipeStatus>()
-                .HasData(new RecipeStatus
-                {
-                    Id = 1,
-                    Name = RecipeStatusNames.Active
-                });
-            builder.Entity<RecipeStatus>()
-                .HasData(new RecipeStatus
-                {
-                    Id = 2,
-                    Name = RecipeStatusNames.Deleted
-                });
-        }
-
-        public static void SeedUserRoles(this ModelBuilder builder)
-        {
-            builder.Entity<IdentityRole<int>>()
-                .HasData(new IdentityRole<int>
-                {
-                    Id = 1,
-                    Name = UserRoleNames.Admin,
-                    NormalizedName = UserRoleNames.Admin.ToUpper()
-                });
-            builder.Entity<IdentityRole<int>>()
-                .HasData(new IdentityRole<int>
-                {
-                    Id = 2,
-                    Name = UserRoleNames.User,
-                    NormalizedName = UserRoleNames.User.ToUpper()
-                });
+            builder.Entity<UserProfile>()
+                .Property(u => u.UserStatus)
+                .HasConversion(s => s.ToString(), s => Enum.Parse<UserStatus>(s));
+            builder.Entity<Recipe>()
+                .Property(u => u.RecipeStatus)
+                .HasConversion(s => s.ToString(), s => Enum.Parse<RecipeStatus>(s));
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CookBook.DAL.Data;
+﻿using CookBook.DAL.Data;
 using CookBook.Domain.Models;
 using CookBook.Presentation.Filters;
 using CookBook.Presentation.Helpers;
@@ -41,13 +40,14 @@ namespace CookBook.Presentation
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, RoleManager<IdentityRole<int>> roleManager)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
+            roleManager.SeedRoles().Wait();
             app.UseExceptionMiddleware();
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             app.UseAuthentication();

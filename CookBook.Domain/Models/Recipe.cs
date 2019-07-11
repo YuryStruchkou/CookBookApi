@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CookBook.Domain.Enums;
 
 namespace CookBook.Domain.Models
 {
@@ -19,11 +20,9 @@ namespace CookBook.Domain.Models
 
         public string Description { get; set; }
 
+        public RecipeStatus RecipeStatus { get; set; }
+
         public virtual ICollection<RecipeTag> RecipeTags { get; set; }
-
-        public int RecipeStatusId { get; set; }
-
-        public virtual RecipeStatus RecipeStatus { get; set; }
 
         public virtual ICollection<Comment> Comments { get; set; }
 

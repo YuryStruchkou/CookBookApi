@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CookBook.Domain.Enums;
 
 namespace CookBook.Domain.Models
 {
@@ -12,9 +13,7 @@ namespace CookBook.Domain.Models
 
         public bool IsMuted { get; set; }
 
-        public int UserStatusId { get; set; }
-
-        public virtual UserStatus UserStatus { get; set; }
+        public UserStatus UserStatus { get; set; }
 
         public virtual ICollection<Comment> Comments { get; set; }
 

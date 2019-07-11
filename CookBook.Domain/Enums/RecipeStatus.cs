@@ -1,6 +1,6 @@
 ﻿namespace CookBook.Domain.Enums
 {
-    public enum RecipeStatuses
+    public enum RecipeStatus
     {
         Active = 1,
         Deleted = 2
