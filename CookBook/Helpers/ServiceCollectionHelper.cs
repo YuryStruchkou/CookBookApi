@@ -4,6 +4,7 @@ using System.Text;
 using CookBook.CoreProject.Constants;
 using CookBook.Presentation.Filters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;

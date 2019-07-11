@@ -34,7 +34,7 @@ namespace CookBook.Presentation
             services.AddAuthorizationPolicies();
             services.AddScoped<JwtFactory>(sp =>
                 new JwtFactory(Configuration["Tokens:Issuer"], Configuration["Tokens:Key"]));
-            services.AddIdentity<ApplicationUser, IdentityRole<int>>()
+            services.AddIdentity<ApplicationUser, IdentityRole<int>>(IdentityOptionsHelper.ConfigureIdentityOptions)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddAutoMapper();
             services.AddMvc();

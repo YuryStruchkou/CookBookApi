@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20190710153505_RequiredEmail.cs" />
+    <Compile Remove="Migrations\20190710153505_RequiredEmail.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CookBook.CoreProject\CookBook.CoreProject.csproj" />
     <ProjectReference Include="..\CookBook.Domain\CookBook.Domain.csproj" />
   </ItemGroup>
