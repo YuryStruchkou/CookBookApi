@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Security.Claims;
 using System.Text;
+using AutoMapper;
 using CookBook.CoreProject.Constants;
-using CookBook.Presentation.Filters;
+using CookBook.Domain.Mappers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -60,6 +60,11 @@ namespace CookBook.Presentation.Helpers
                 opt.SuppressModelStateInvalidFilter = true;
             });
             services.AddScoped<T>();
+        }
+
+        public static void AddAutoMapperProfiles(this IServiceCollection services)
+        {
+            services.AddAutoMapper(typeof(AccountProfile));
         }
     }
 }
