@@ -48,6 +48,7 @@ namespace CookBook.Presentation
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseExceptionMiddleware();
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             app.UseAuthentication();
             app.UseMvc();
