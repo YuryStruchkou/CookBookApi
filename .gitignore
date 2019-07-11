@@ -260,3 +260,4 @@ paket-files/
 __pycache__/
 *.pyc
 /CookBook/appsettings.development.json
+/CookBook/Logs

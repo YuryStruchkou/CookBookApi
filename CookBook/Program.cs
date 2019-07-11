@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Serilog;
 
 namespace CookBook.Presentation
 {
@@ -11,7 +12,7 @@ namespace CookBook.Presentation
             CreateWebHostBuilder(args).Build().Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+        private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((context, config) =>
                 {
@@ -20,6 +21,7 @@ namespace CookBook.Presentation
                         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true);
                     config.AddEnvironmentVariables();
                 })
+                .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration))
                 .UseStartup<Startup>();
     }
 }

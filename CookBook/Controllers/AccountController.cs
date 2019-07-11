@@ -14,7 +14,6 @@ using CookBook.Presentation.JWT;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace CookBook.Presentation.Controllers
 {

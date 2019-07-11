@@ -36,7 +36,7 @@ namespace CookBook.Presentation
                 new JwtFactory(Configuration["Tokens:Issuer"], Configuration["Tokens:Key"]));
             services.AddIdentity<ApplicationUser, IdentityRole<int>>(IdentityOptionsHelper.ConfigureIdentityOptions)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddAutoMapper();
+            services.AddAutoMapperProfiles();
             services.AddMvc();
         }
 
@@ -48,6 +48,7 @@ namespace CookBook.Presentation
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseExceptionMiddleware();
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             app.UseAuthentication();
             app.UseMvc();

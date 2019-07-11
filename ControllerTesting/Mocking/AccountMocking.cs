@@ -6,23 +6,19 @@ using CookBook.Domain.Mappers;
 using CookBook.Domain.Models;
 using CookBook.Presentation.Controllers;
 using CookBook.Presentation.JWT;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
 
 namespace ControllerTesting.Mocking
 {
     class AccountMocking
     {
-        private List<ApplicationUser> _users = new List<ApplicationUser>();
+        private readonly List<ApplicationUser> _users = new List<ApplicationUser>();
 
         private readonly ApplicationUser DefaultUser = new ApplicationUser
         {
