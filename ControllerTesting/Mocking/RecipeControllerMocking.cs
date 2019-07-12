@@ -8,7 +8,7 @@ namespace Testing.Mocking
         public override RecipeController Setup()
         {
             var mapper = SetupMapper();
-            return new RecipeController(mapper);
+            return null;
         }
     }
 }

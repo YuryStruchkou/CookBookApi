@@ -137,7 +137,7 @@ namespace CookBook.CoreProject.Helpers
             builder.Entity<RecipeTag>()
                 .HasOne(rt => rt.Tag)
                 .WithMany(t => t.RecipeTags)
-                .HasForeignKey(rt => rt.RecipeId)
+                .HasForeignKey(rt => rt.TagId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
 

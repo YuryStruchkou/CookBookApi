@@ -15,10 +15,10 @@ namespace CookBook.Domain.Models
 
         public UserStatus UserStatus { get; set; }
 
-        public virtual ICollection<Comment> Comments { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
 
-        public virtual ICollection<Vote> Votes { get; set; }
+        public virtual ICollection<Vote> Votes { get; set; } = new HashSet<Vote>();
 
-        public virtual ICollection<Recipe> Recipes { get; set; }
+        public virtual ICollection<Recipe> Recipes { get; set; } = new HashSet<Recipe>();
     }
 }

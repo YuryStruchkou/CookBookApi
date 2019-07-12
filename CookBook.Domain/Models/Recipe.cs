@@ -22,11 +22,11 @@ namespace CookBook.Domain.Models
 
         public RecipeStatus RecipeStatus { get; set; }
 
-        public virtual ICollection<RecipeTag> RecipeTags { get; set; }
+        public virtual ICollection<RecipeTag> RecipeTags { get; set; } = new HashSet<RecipeTag>();
 
-        public virtual ICollection<Comment> Comments { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
 
-        public virtual ICollection<Vote> Votes { get; set; }
+        public virtual ICollection<Vote> Votes { get; set; } = new HashSet<Vote>();
 
         public int? UserId { get; set; }
 

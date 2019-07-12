@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CookBook.BLL.Services;
 using CookBook.DAL.Data;
@@ -17,6 +18,7 @@ namespace Testing.TestSuites
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase("test")
+                .EnableSensitiveDataLogging()
                 .Options;
             var mocker = new RecipeServiceMocking(options);
             _service = mocker.Setup();
@@ -32,6 +34,7 @@ namespace Testing.TestSuites
             Assert.Equal(model.Name, result.Name);
             Assert.Equal(model.Description, result.Description);
             Assert.Equal(model.Content, result.Content);
+            Assert.Equal(model.Tags, result.RecipeTags.Select(rt => rt.Tag.Content).ToList());
         }
 
         private CreateRecipeViewModel CreateDefaultCreateRecipeViewModel()
