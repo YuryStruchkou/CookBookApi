@@ -1,17 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using AutoMapper;
 using CookBook.CoreProject.Constants;
 using CookBook.Domain.Mappers;
 using CookBook.Domain.Models;
 using CookBook.Presentation.Controllers;
 using CookBook.Presentation.JWT;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Routing;
 using Moq;
 
 namespace Testing.Mocking
@@ -26,12 +20,6 @@ namespace Testing.Mocking
             Email = "user1@mailinator.com",
             PasswordHash = "pass"
         };
-
-        public ActionExecutingContext SetupContext(AccountController controller)
-        {
-            return new ActionExecutingContext(new ControllerContext(new ActionContext(new Mock<HttpContext>().Object, new RouteData(),
-                new ControllerActionDescriptor())), new List<IFilterMetadata>(),  new Dictionary<string, object>(), controller);
-        }
 
         public override AccountController Setup()
         {

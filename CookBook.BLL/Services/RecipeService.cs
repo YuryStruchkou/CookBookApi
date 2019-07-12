@@ -23,14 +23,14 @@ namespace CookBook.BLL.Services
         public async Task<Recipe> AddAsync(CreateRecipeViewModel model)
         {
             var recipe = _mapper.Map<CreateRecipeViewModel, Recipe>(model);
-            var tags = await FindOrAddTags(model.Tags);
+            var tags = await GetOrAddTags(model.Tags);
             recipe.RecipeTags = tags.Select(t => new RecipeTag { Tag = t }).ToHashSet();
             await _context.Recipes.AddAsync(recipe);
             await _context.SaveChangesAsync();
             return recipe;
         }
 
-        private async Task<IEnumerable<Tag>> FindOrAddTags(List<string> tags)
+        private async Task<IEnumerable<Tag>> GetOrAddTags(List<string> tags)
         {
             var dbTags = _context.Tags.Where(t => tags.Contains(t.Content)).ToList();
             var dbTagNames = dbTags.Select(t => t.Content).ToHashSet();
@@ -38,6 +38,11 @@ namespace CookBook.BLL.Services
             dbTags.AddRange(newTags);
             await _context.Tags.AddRangeAsync(newTags);
             return dbTags;
+        }
+
+        public async Task<Recipe> GetAsync(int id)
+        {
+            return await _context.Recipes.FindAsync(id);
         }
     }
 }
