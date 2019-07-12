@@ -31,7 +31,7 @@ namespace Testing.TestSuites
         {
             var model = CreateDefaultCreateRecipeViewModel();
 
-            var result = await _service.AddAsync(model);
+            var result = await _service.AddAsync(model, 1);
 
             Assert.Equal(model.Name, result.Name);
             Assert.Equal(model.Description, result.Description);
@@ -39,6 +39,7 @@ namespace Testing.TestSuites
             Assert.Equal(model.Tags, result.RecipeTags.Select(rt => rt.Tag.Content).ToList());
             Assert.NotEqual(default(DateTime), result.CreationDate);
             Assert.Equal(RecipeStatus.Active, result.RecipeStatus);
+            Assert.Equal(1, result.UserId);
         }
 
         private CreateRecipeViewModel CreateDefaultCreateRecipeViewModel()
@@ -56,7 +57,7 @@ namespace Testing.TestSuites
         public async Task GetRecipeOk()
         {
             var model = CreateDefaultCreateRecipeViewModel();
-            var addedRecipe = await _service.AddAsync(model);
+            var addedRecipe = await _service.AddAsync(model, 1);
 
             var result = await _service.GetAsync(addedRecipe.Id);
 
@@ -66,6 +67,7 @@ namespace Testing.TestSuites
             Assert.Equal(addedRecipe.Content, result.Content);
             Assert.Equal(addedRecipe.RecipeTags.Select(rt => rt.Tag.Content).ToList(), result.RecipeTags.Select(rt => rt.Tag.Content).ToList());
             Assert.Equal(addedRecipe.CreationDate, result.CreationDate);
+            Assert.Equal(addedRecipe.UserId, result.UserId);
         }
 
         [Fact]

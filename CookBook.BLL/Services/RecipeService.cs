@@ -20,11 +20,12 @@ namespace CookBook.BLL.Services
             _context = context;
         }
 
-        public async Task<Recipe> AddAsync(CreateRecipeViewModel model)
+        public async Task<Recipe> AddAsync(CreateRecipeViewModel model, int? id)
         {
             var recipe = _mapper.Map<CreateRecipeViewModel, Recipe>(model);
             var tags = await GetOrAddTags(model.Tags);
             recipe.RecipeTags = tags.Select(t => new RecipeTag { Tag = t }).ToHashSet();
+            recipe.UserId = id;
             await _context.Recipes.AddAsync(recipe);
             await _context.SaveChangesAsync();
             return recipe;

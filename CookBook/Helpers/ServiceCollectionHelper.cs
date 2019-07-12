@@ -1,17 +1,22 @@
 ﻿using System;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using AutoMapper;
 using CookBook.BLL.Services;
 using CookBook.CoreProject.Constants;
 using CookBook.CoreProject.Interfaces;
 using CookBook.Domain.Mappers;
+using CookBook.Domain.ResultDtos;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace CookBook.Presentation.Helpers
 {
@@ -32,6 +37,17 @@ namespace CookBook.Presentation.Helpers
                         ValidIssuer = config["Tokens:Issuer"],
                         ValidAudience = config["Tokens:Issuer"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Tokens:Key"]))
+                    };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnChallenge = context =>
+                        {
+                            context.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                            context.Response.ContentType = "application/json";
+                            var result = new ErrorDto(context.Response.StatusCode, "Invalid JWT token.");
+                            context.Response.WriteAsync(JsonConvert.SerializeObject(result)).RunSynchronously();
+                            return Task.CompletedTask;
+                        }
                     };
                 });
         }
