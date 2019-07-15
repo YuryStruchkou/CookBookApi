@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CookBook.Domain.ViewModels.RecipeViewModels
 {
-    public class CreateRecipeViewModel
+    public class CreateUpdateRecipeViewModel
     {
         [Required]
         public string Name { get; set; }

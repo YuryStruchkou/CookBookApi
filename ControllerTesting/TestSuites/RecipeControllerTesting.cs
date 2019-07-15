@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using CookBook.CoreProject.Helpers;
 using CookBook.Domain.ResultDtos;
 using CookBook.Domain.ResultDtos.RecipeDtos;
 using CookBook.Domain.ViewModels.RecipeViewModels;
 using CookBook.Presentation.Controllers;
+using CookBook.Presentation.ObjectResults;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Testing.Helpers;
@@ -35,9 +38,9 @@ namespace Testing.TestSuites
             Assert.NotNull(result);
         }
 
-        private CreateRecipeViewModel CreateDefaultCreateRecipeViewModel()
+        private CreateUpdateRecipeViewModel CreateDefaultCreateRecipeViewModel()
         {
-            return new CreateRecipeViewModel
+            return new CreateUpdateRecipeViewModel
             {
                 Name = "Name",
                 Description = "A short description",
@@ -55,7 +58,7 @@ namespace Testing.TestSuites
         [Fact]
         public void CreateRecipeInvalidModel()
         {
-            var model = new CreateRecipeViewModel();
+            var model = new CreateUpdateRecipeViewModel();
             _context.ModelState.Validate(model);
 
             var error = AttributeHelper.ExecuteModelValidation(_context);
@@ -83,6 +86,70 @@ namespace Testing.TestSuites
 
             Assert.Equal((int)HttpStatusCode.NotFound, error.Code);
             Assert.Contains("Recipe not found.", error.Errors);
+        }
+
+        [Fact]
+        public async Task UpdateRecipeOk()
+        {
+            var model = CreateDefaultCreateRecipeViewModel();
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = SetupClaimsPrincipal() }
+            };
+
+            var json = (OkObjectResult) await _controller.UpdateRecipe(model, 1);
+            var result = (RecipeDto) json.Value;
+
+            Assert.NotNull(result);
+        }
+
+        private ClaimsPrincipal SetupClaimsPrincipal(string role = "User")
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, role)
+            };
+            var identity = new ClaimsIdentity(claims, "Bearer");
+            return new ClaimsPrincipal(identity);
+        }
+
+        [Fact]
+        public async Task UpdateRecipeWrongUserId()
+        {
+            var model = CreateDefaultCreateRecipeViewModel();
+            var user = SetupClaimsPrincipal();
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = user }
+            };
+
+            var json = (ForbiddenObjectResult)await _controller.UpdateRecipe(model, 2);
+            var error = (ErrorDto)json.Value;
+
+            Assert.Equal((int) HttpStatusCode.Forbidden, error.Code);
+            Assert.Contains("User id does not match.", error.Errors);
+        }
+
+        [Fact]
+        public async Task UpdateRecipeNotFound()
+        {
+            var model = CreateDefaultCreateRecipeViewModel();
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = SetupClaimsPrincipal() }
+            };
+
+            var json = (NotFoundObjectResult)await _controller.UpdateRecipe(model, 0);
+            var error = (ErrorDto)json.Value;
+
+            Assert.Equal((int)HttpStatusCode.NotFound, error.Code);
+            Assert.Contains("Recipe not found.", error.Errors);
+        }
+
+        [Fact]
+        public void UpdateRecipeHasModelValidation()
+        {
+            Assert.True(AttributeHelper.IsModelValidationApplied(typeof(RecipeController), "UpdateRecipe"));
         }
     }
 }

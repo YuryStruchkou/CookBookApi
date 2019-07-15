@@ -6,8 +6,10 @@ namespace CookBook.CoreProject.Interfaces
 {
     public interface IRecipeService
     {
-        Task<Recipe> AddAsync(CreateRecipeViewModel model, int? userId);
+        Task<Recipe> AddAsync(CreateUpdateRecipeViewModel model, int? userId);
 
         Task<Recipe> GetAsync(int id);
+
+        Task<Recipe> UpdateAsync(CreateUpdateRecipeViewModel model, int recipeId);
     }
 }

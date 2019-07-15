@@ -11,9 +11,8 @@ namespace CookBook.Domain.Mappers
     {
         public RecipeProfile()
         {
-            CreateMap<CreateRecipeViewModel, Recipe>()
-                .ForMember(r => r.RecipeStatus, src => src.MapFrom(vm => RecipeStatus.Active))
-                .ForMember(r => r.CreationDate, src => src.MapFrom(vm => DateTime.Now));
+            CreateMap<CreateUpdateRecipeViewModel, Recipe>()
+                .ForMember(r => r.RecipeStatus, src => src.MapFrom(vm => RecipeStatus.Active));
             CreateMap<Recipe, RecipeDto>();
         }
     }

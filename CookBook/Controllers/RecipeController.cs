@@ -1,14 +1,16 @@
-﻿using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
+using CookBook.CoreProject.Constants;
+using CookBook.CoreProject.Helpers;
 using CookBook.CoreProject.Interfaces;
 using CookBook.Domain.Models;
 using CookBook.Domain.ResultDtos;
 using CookBook.Domain.ResultDtos.RecipeDtos;
 using CookBook.Domain.ViewModels.RecipeViewModels;
 using CookBook.Presentation.Filters;
+using CookBook.Presentation.ObjectResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -32,10 +34,9 @@ namespace CookBook.Presentation.Controllers
         }
 
         [HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> CreateRecipe([FromBody] CreateRecipeViewModel model)
+        public async Task<IActionResult> CreateRecipe([FromBody] CreateUpdateRecipeViewModel model)
         {
-            var username = _userManager.GetUserName(User);
-            var userId = (await _userManager.FindByNameAsync(username))?.Id;
+            var userId = await _userManager.GetCurrentUserIdAsync(User);
             var recipe = await _recipeService.AddAsync(model, userId);
             var result = _mapper.Map<Recipe, RecipeDto>(recipe);
             return new OkObjectResult(result);
@@ -50,6 +51,23 @@ namespace CookBook.Presentation.Controllers
             {
                 return new NotFoundObjectResult(new ErrorDto((int) HttpStatusCode.NotFound, "Recipe not found."));
             }
+            return new OkObjectResult(result);
+        }
+
+        [HttpPut, Route("{id}"), Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> UpdateRecipe([FromBody] CreateUpdateRecipeViewModel model, [FromRoute] int id)
+        {
+            var recipe = await _recipeService.GetAsync(id);
+            if (recipe == null)
+            {
+                return new NotFoundObjectResult(new ErrorDto((int)HttpStatusCode.NotFound, "Recipe not found."));
+            }
+            if (!User.IsInRole(UserRoleNames.Admin) && recipe.UserId != await _userManager.GetCurrentUserIdAsync(User))
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User id does not match."));
+            }
+            recipe = await _recipeService.UpdateAsync(model, recipe.Id);
+            var result = _mapper.Map<Recipe, RecipeDto>(recipe);
             return new OkObjectResult(result);
         }
     }

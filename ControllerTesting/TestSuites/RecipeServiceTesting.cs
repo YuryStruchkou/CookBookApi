@@ -36,15 +36,18 @@ namespace Testing.TestSuites
             Assert.Equal(model.Name, result.Name);
             Assert.Equal(model.Description, result.Description);
             Assert.Equal(model.Content, result.Content);
-            Assert.Equal(model.Tags, result.RecipeTags.Select(rt => rt.Tag.Content).ToList());
+            var resultTags = result.RecipeTags.Select(rt => rt.Tag.Content).ToList();
+            model.Tags.Sort();
+            resultTags.Sort();
+            Assert.Equal(model.Tags, resultTags);
             Assert.NotEqual(default(DateTime), result.CreationDate);
             Assert.Equal(RecipeStatus.Active, result.RecipeStatus);
             Assert.Equal(1, result.UserId);
         }
 
-        private CreateRecipeViewModel CreateDefaultCreateRecipeViewModel()
+        private CreateUpdateRecipeViewModel CreateDefaultCreateRecipeViewModel()
         {
-            return new CreateRecipeViewModel
+            return new CreateUpdateRecipeViewModel
             {
                 Name = "Name",
                 Description = "A short description",
@@ -75,6 +78,31 @@ namespace Testing.TestSuites
         {
             var result = await _service.GetAsync(5);
             Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task UpdateRecipeOk()
+        {
+            var model = CreateDefaultCreateRecipeViewModel();
+            var addedRecipe = await _service.AddAsync(model, 1);
+            model.Name = "Another name";
+            model.Description = "New description";
+            model.Content = "Another content";
+            model.Tags = new List<string> { "NewTag1", "tag2" };
+
+            var result = await _service.UpdateAsync(model, addedRecipe.Id);
+
+            Assert.Equal(model.Name, result.Name);
+            Assert.Equal(model.Description, result.Description);
+            Assert.Equal(model.Content, result.Content);
+            var resultTags = result.RecipeTags.Select(rt => rt.Tag.Content).ToList();
+            model.Tags.Sort();
+            resultTags.Sort();
+            Assert.Equal(model.Tags, resultTags);
+            Assert.NotEqual(default(DateTime), result.CreationDate);
+            Assert.NotNull(result.EditDate);
+            Assert.Equal(RecipeStatus.Active, result.RecipeStatus);
+            Assert.Equal(1, result.UserId);
         }
     }
 }
