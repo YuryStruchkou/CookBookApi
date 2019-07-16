@@ -26,7 +26,7 @@ namespace CookBook.Presentation
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseLazyLoadingProxies().UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.OverrideDefaultModelValidation<ModelValidationAttribute>();
             services.AddCors();
             services.AddJwtAuthentication(Configuration);

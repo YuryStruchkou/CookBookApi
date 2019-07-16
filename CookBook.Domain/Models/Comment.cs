@@ -14,7 +14,7 @@ namespace CookBook.Domain.Models
 
         public int? UserId { get; set; }
 
-        public UserProfile User { get; set; }
+        public virtual UserProfile User { get; set; }
 
         public int RecipeId { get; set; }
 

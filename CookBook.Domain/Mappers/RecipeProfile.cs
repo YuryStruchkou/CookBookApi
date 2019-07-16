@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq;
 using AutoMapper;
 using CookBook.Domain.Enums;
 using CookBook.Domain.Models;
@@ -13,7 +13,8 @@ namespace CookBook.Domain.Mappers
         {
             CreateMap<CreateUpdateRecipeViewModel, Recipe>()
                 .ForMember(r => r.RecipeStatus, src => src.MapFrom(vm => RecipeStatus.Active));
-            CreateMap<Recipe, RecipeDto>();
+            CreateMap<Recipe, RecipeDto>()
+                .ForMember(r => r.Tags, src => src.MapFrom(r => r.RecipeTags.Select(rt => rt.Tag.Content)));
         }
     }
 }
