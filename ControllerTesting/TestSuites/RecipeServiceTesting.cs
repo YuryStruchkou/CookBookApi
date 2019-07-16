@@ -106,6 +106,21 @@ namespace Testing.TestSuites
         }
 
         [Fact]
+        public async Task UpdateRecipeNotFound()
+        {
+            var model = CreateDefaultCreateRecipeViewModel();
+            var addedRecipe = await _service.AddAsync(model, 1);
+            model.Name = "Another name";
+            model.Description = "New description";
+            model.Content = "Another content";
+            model.Tags = new List<string> { "NewTag1", "tag2" };
+
+            var result = await _service.UpdateAsync(model, addedRecipe.Id + 10);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
         public async Task MarkRecipeAsDeletedOk()
         {
             var model = CreateDefaultCreateRecipeViewModel();

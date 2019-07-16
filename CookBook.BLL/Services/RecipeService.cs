@@ -8,6 +8,7 @@ using CookBook.DAL.Data;
 using CookBook.Domain.Enums;
 using CookBook.Domain.Models;
 using CookBook.Domain.ViewModels.RecipeViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace CookBook.BLL.Services
 {
@@ -52,7 +53,11 @@ namespace CookBook.BLL.Services
 
         public async Task<Recipe> UpdateAsync(CreateUpdateRecipeViewModel model, int recipeId)
         {
-            var recipe = _context.Recipes.Find(recipeId);
+            var recipe = _context.Recipes.Include(r => r.RecipeTags).SingleOrDefault(r => r.Id == recipeId);
+            if (recipe == null)
+            {
+                return null;
+            }
             var tags = GetOrAddTags(model.Tags);
             recipe.RecipeTags = tags.Select(t => new RecipeTag { Tag = t }).ToHashSet();
             recipe.Name = model.Name;
