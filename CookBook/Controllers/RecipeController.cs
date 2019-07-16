@@ -70,5 +70,21 @@ namespace CookBook.Presentation.Controllers
             var result = _mapper.Map<Recipe, RecipeDto>(recipe);
             return new OkObjectResult(result);
         }
+
+        [HttpDelete, Route("{id}"), Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> MarkRecipeAsDeleted([FromRoute] int id)
+        {
+            var recipe = await _recipeService.GetAsync(id);
+            if (recipe == null)
+            {
+                return new NotFoundObjectResult(new ErrorDto((int) HttpStatusCode.NotFound, "Recipe not found."));
+            }
+            if (!User.IsInRole(UserRoleNames.Admin) && recipe.UserId != await _userManager.GetCurrentUserIdAsync(User))
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User id does not match."));
+            }
+            await _recipeService.MarkAsDeletedAsync(id);
+            return new NoContentResult();
+        }
     }
 }

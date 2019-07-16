@@ -10,7 +10,12 @@ namespace Testing.Mocking
 {
     class RecipeControllerMocking : BaseMocking<RecipeController, RecipeProfile>
     {
-        public static readonly int DefaultUserId = 1;
+        private static readonly int DefaultUserId = 1;
+
+        public Mock<IRecipeService> RecipeServiceMock { get; } = new Mock<IRecipeService>();
+
+        public Mock<UserManager<ApplicationUser>> UserManagerMock { get; } = new Mock<UserManager<ApplicationUser>>(new Mock<IUserStore<ApplicationUser>>().Object,
+            null, null, null, null, null, null, null, null);
 
         public override RecipeController Setup()
         {
@@ -23,21 +28,19 @@ namespace Testing.Mocking
 
         private Mock<IRecipeService> MockRecipeService()
         {
-            var mock = new Mock<IRecipeService>();
-            mock.Setup(s => s.AddAsync(It.IsAny<CreateUpdateRecipeViewModel>(), It.IsAny<int>()))
+            RecipeServiceMock.Setup(s => s.AddAsync(It.IsAny<CreateUpdateRecipeViewModel>(), It.IsAny<int>()))
                 .ReturnsAsync((CreateUpdateRecipeViewModel m, int id) => new Recipe { UserId = id, Id = 1 });
-            mock.Setup(s => s.GetAsync(It.IsAny<int>())).ReturnsAsync((int id) => id > 0 ? new Recipe { Id = id, UserId = id } : null );
-            mock.Setup(s => s.UpdateAsync(It.IsAny<CreateUpdateRecipeViewModel>(), It.IsAny<int>()))
+            RecipeServiceMock.Setup(s => s.GetAsync(It.IsAny<int>())).ReturnsAsync((int id) => id > 0 ? new Recipe { Id = id, UserId = id } : null );
+            RecipeServiceMock.Setup(s => s.UpdateAsync(It.IsAny<CreateUpdateRecipeViewModel>(), It.IsAny<int>()))
                 .ReturnsAsync((CreateUpdateRecipeViewModel m, int id) => new Recipe { Id = id, Name = m.Name });
-            return mock;
+            RecipeServiceMock.Setup(s => s.MarkAsDeletedAsync(It.IsAny<int>())).ReturnsAsync((int id) => id > 0);
+            return RecipeServiceMock;
         }
 
         private Mock<UserManager<ApplicationUser>> MockUserManager()
         {
-            var store = new Mock<IUserStore<ApplicationUser>>();
-            var mock = new Mock<UserManager<ApplicationUser>>(store.Object, null, null, null, null, null, null, null, null);
-            mock.Setup(m => m.FindByNameAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser {Id = DefaultUserId});
-            return mock;
+            UserManagerMock.Setup(m => m.FindByNameAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser {Id = DefaultUserId});
+            return UserManagerMock;
         }
     }
 }

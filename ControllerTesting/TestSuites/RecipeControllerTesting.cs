@@ -11,6 +11,7 @@ using CookBook.Presentation.ObjectResults;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Moq;
 using Testing.Helpers;
 using Testing.Mocking;
 using Xunit;
@@ -21,12 +22,13 @@ namespace Testing.TestSuites
     {
         private readonly RecipeController _controller;
         private readonly ActionExecutingContext _context;
+        private readonly RecipeControllerMocking _mocker;
 
         public RecipeControllerTesting()
         {
-            var mocker = new RecipeControllerMocking();
-            _controller = mocker.Setup();
-            _context = mocker.SetupContext(_controller);
+            _mocker = new RecipeControllerMocking();
+            _controller = _mocker.Setup();
+            _context = _mocker.SetupContext(_controller);
         }
 
         [Fact]
@@ -150,6 +152,53 @@ namespace Testing.TestSuites
         public void UpdateRecipeHasModelValidation()
         {
             Assert.True(AttributeHelper.IsModelValidationApplied(typeof(RecipeController), "UpdateRecipe"));
+        }
+
+        [Fact]
+        public void MarkRecipeAsDeletedHasModelValidation()
+        {
+            Assert.True(AttributeHelper.IsModelValidationApplied(typeof(RecipeController), "MarkRecipeAsDeleted"));
+        }
+
+        [Fact]
+        public async Task MarkRecipeAsDeletedOk()
+        {
+            var user = SetupClaimsPrincipal();
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = user }
+            };
+
+            var actionResult = (NoContentResult) await _controller.MarkRecipeAsDeleted(1);
+
+            _mocker.RecipeServiceMock.Verify(m => m.MarkAsDeletedAsync(1), Times.Once);
+            Assert.NotNull(actionResult);
+        }
+
+        [Fact]
+        public async Task MarkRecipeAsDeletedNotFound()
+        {
+            var json = (NotFoundObjectResult)await _controller.MarkRecipeAsDeleted(-1);
+            var error = (ErrorDto) json.Value;
+
+            Assert.Equal((int) HttpStatusCode.NotFound, error.Code);
+            Assert.Contains("Recipe not found.", error.Errors);
+        }
+
+        [Fact]
+        public async Task MarkRecipeAsDeletedWrongUserId()
+        {
+            var user = SetupClaimsPrincipal();
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = user }
+            };
+
+            var json = (ForbiddenObjectResult)await _controller.MarkRecipeAsDeleted(2);
+            var error = (ErrorDto)json.Value;
+
+            Assert.Equal((int)HttpStatusCode.Forbidden, error.Code);
+            Assert.Contains("User id does not match.", error.Errors);
         }
     }
 }

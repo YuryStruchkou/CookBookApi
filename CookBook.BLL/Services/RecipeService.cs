@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using CookBook.CoreProject.Interfaces;
 using CookBook.DAL.Data;
+using CookBook.Domain.Enums;
 using CookBook.Domain.Models;
 using CookBook.Domain.ViewModels.RecipeViewModels;
 
@@ -21,12 +22,12 @@ namespace CookBook.BLL.Services
             _context = context;
         }
 
-        public async Task<Recipe> AddAsync(CreateUpdateRecipeViewModel model, int? id)
+        public async Task<Recipe> AddAsync(CreateUpdateRecipeViewModel model, int? userId)
         {
             var recipe = _mapper.Map<CreateUpdateRecipeViewModel, Recipe>(model);
             var tags = GetOrAddTags(model.Tags);
             recipe.RecipeTags = tags.Select(t => new RecipeTag { Tag = t }).ToHashSet();
-            recipe.UserId = id;
+            recipe.UserId = userId;
             recipe.CreationDate = DateTime.Now;
             _context.Recipes.Add(recipe);
             await _context.SaveChangesAsync();
@@ -45,7 +46,8 @@ namespace CookBook.BLL.Services
 
         public async Task<Recipe> GetAsync(int id)
         {
-            return await _context.Recipes.FindAsync(id);
+            var result = await _context.Recipes.FindAsync(id);
+            return result?.RecipeStatus != RecipeStatus.Deleted ? result : null;
         }
 
         public async Task<Recipe> UpdateAsync(CreateUpdateRecipeViewModel model, int recipeId)
@@ -60,6 +62,17 @@ namespace CookBook.BLL.Services
             _context.Recipes.Update(recipe);
             await _context.SaveChangesAsync();
             return recipe;
+        }
+
+        public async Task<bool> MarkAsDeletedAsync(int id)
+        {
+            var recipe = _context.Recipes.Find(id);
+            if (recipe == null) return false;
+            recipe.RecipeStatus = RecipeStatus.Deleted;
+            recipe.DeleteDate = DateTime.Now;
+            _context.Recipes.Update(recipe);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

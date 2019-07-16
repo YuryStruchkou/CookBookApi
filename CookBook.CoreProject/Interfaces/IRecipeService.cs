@@ -11,5 +11,7 @@ namespace CookBook.CoreProject.Interfaces
         Task<Recipe> GetAsync(int id);
 
         Task<Recipe> UpdateAsync(CreateUpdateRecipeViewModel model, int recipeId);
+
+        Task<bool> MarkAsDeletedAsync(int id);
     }
 }

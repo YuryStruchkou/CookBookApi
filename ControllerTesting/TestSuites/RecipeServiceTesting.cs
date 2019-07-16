@@ -104,5 +104,31 @@ namespace Testing.TestSuites
             Assert.Equal(RecipeStatus.Active, result.RecipeStatus);
             Assert.Equal(1, result.UserId);
         }
+
+        [Fact]
+        public async Task MarkRecipeAsDeletedOk()
+        {
+            var model = CreateDefaultCreateRecipeViewModel();
+            var addedRecipe = await _service.AddAsync(model, 1);
+            var id = addedRecipe.Id;
+
+            bool result = await _service.MarkAsDeletedAsync(id);
+
+            Assert.True(result);
+            Assert.Null(await _service.GetAsync(id));
+        }
+
+        [Fact]
+        public async Task MarkRecipeAsDeletedNotFound()
+        {
+            var model = CreateDefaultCreateRecipeViewModel();
+            var addedRecipe = await _service.AddAsync(model, 1);
+            var id = addedRecipe.Id;
+
+            bool result = await _service.MarkAsDeletedAsync(4000);
+
+            Assert.False(result);
+            Assert.NotNull(await _service.GetAsync(id));
+        }
     }
 }
