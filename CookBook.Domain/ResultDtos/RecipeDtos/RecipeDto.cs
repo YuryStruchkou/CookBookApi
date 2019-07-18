@@ -27,6 +27,6 @@ namespace CookBook.Domain.ResultDtos.RecipeDtos
 
         public int? UserVote { get; set; }
 
-        public int RecipeStatusId { get; set; }
+        public string RecipeStatus { get; set; }
     }
 }

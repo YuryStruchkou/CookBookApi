@@ -21,7 +21,7 @@ namespace CookBook.Domain.Mappers
             CreateMap<UserProfile, RegistrationResultDto>();
             CreateMap<ApplicationUser, RegistrationResultDto>()
                 .ForMember(dto => dto.IsMuted, src => src.MapFrom(u => u.UserProfile.IsMuted))
-                .ForMember(dto => dto.UserStatusId, src => src.MapFrom(u => u.UserProfile.UserStatus))
+                .ForMember(dto => dto.UserStatus, src => src.MapFrom(u => u.UserProfile.UserStatus))
                 .ForMember(dto => dto.AvatarUrl, src => src.MapFrom(u => u.UserProfile.AvatarUrl));
         }
     }

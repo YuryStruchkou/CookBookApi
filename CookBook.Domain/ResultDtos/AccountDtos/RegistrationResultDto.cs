@@ -8,7 +8,7 @@
 
         public bool IsMuted { get; set; }
 
-        public int UserStatusId { get; set; }
+        public string UserStatus { get; set; }
 
         public string AvatarUrl { get; set; }
     }

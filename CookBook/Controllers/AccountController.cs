@@ -25,7 +25,7 @@ namespace CookBook.Presentation.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly JwtFactory _jwtFactory;
         private readonly IMapper _mapper;
-        private const int TokenLifetime = 5;
+        private const int TokenLifetime = 60;
 
         public AccountController(UserManager<ApplicationUser> userManager, IMapper mapper, JwtFactory jwtFactory)
         {
