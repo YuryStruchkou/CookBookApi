@@ -35,7 +35,7 @@ namespace CookBook.Presentation
             services.AddScoped<JwtFactory>(sp =>
                 new JwtFactory(Configuration["Tokens:Issuer"], Configuration["Tokens:Key"], Convert.ToInt32(Configuration["Tokens:ValidForMinutes"])));
             services.AddScoped<RefreshTokenFactory>(sp =>
-                new RefreshTokenFactory(Convert.ToInt32(Configuration["Tokens:RefreshTokenBytes"])));
+                new RefreshTokenFactory(Convert.ToInt32(Configuration["Tokens:RefreshTokenBytes"]), Convert.ToInt32(Configuration["Tokens:RefreshValidForDays"])));
             services.AddIdentity<ApplicationUser, IdentityRole<int>>(IdentityOptionsHelper.ConfigureIdentityOptions)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.RegisterCustomServices();

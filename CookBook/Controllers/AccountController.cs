@@ -57,10 +57,13 @@ namespace CookBook.Presentation.Controllers
             {
                 return new BadRequestObjectResult(new ErrorDto((int) HttpStatusCode.BadRequest, "Incorrect username and/or password."));
             }
-            var claims = await GetClaimsIdentity(user);
+            var jwtToken = await GenerateJwtToken(user);
+            var refreshToken = await GenerateAndSaveRefreshToken(user);
             return new OkObjectResult(new LoginResultDto
             {
-                JwtToken = _jwtFactory.GenerateEncodedToken(claims),
+                JwtToken = jwtToken.Token,
+                ExpiryDate = jwtToken.ExpiryDate,
+                RefreshToken = refreshToken.Token,
                 UserName = user.UserName
             });
         }
@@ -83,6 +86,20 @@ namespace CookBook.Presentation.Controllers
                 new Claim(ClaimsIdentity.DefaultRoleClaimType, role ?? string.Empty)
             };
             return new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+        }
+
+        private async Task<JwtToken> GenerateJwtToken(ApplicationUser user)
+        {
+            var claims = await GetClaimsIdentity(user);
+            return _jwtFactory.GenerateEncodedToken(claims);
+        }
+
+        private async Task<RefreshToken> GenerateAndSaveRefreshToken(ApplicationUser user)
+        {
+            var token = _refreshTokenFactory.GenerateToken();
+            user.RefreshTokens.Add(token);
+            await _userManager.UpdateAsync(user);
+            return token;
         }
     }
 }

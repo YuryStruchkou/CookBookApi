@@ -138,6 +138,8 @@ namespace Testing.TestSuites
         private void AssertLoggedInSuccessfully(LoginResultDto data)
         {
             Assert.NotNull(data.JwtToken);
+            Assert.NotEqual(default, data.ExpiryDate);
+            Assert.NotNull(data.RefreshToken);
             Assert.NotNull(data.UserName);
         }
 

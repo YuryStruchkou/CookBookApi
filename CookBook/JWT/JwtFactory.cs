@@ -19,18 +19,23 @@ namespace CookBook.Presentation.JWT
             _validForMinutes = validForMinutes;
         }
 
-        public string GenerateEncodedToken(ClaimsIdentity claimsIdentity)
+        public JwtToken GenerateEncodedToken(ClaimsIdentity claimsIdentity)
         {
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key));
+            var expiryDate = DateTime.Now.AddMinutes(_validForMinutes);
             var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
             var tokenOptions = new JwtSecurityToken(
                 issuer: _issuer,
                 audience: _issuer,
                 claims: claimsIdentity.Claims,
-                expires: DateTime.Now.AddMinutes(_validForMinutes),
+                expires: expiryDate,
                 signingCredentials: signingCredentials
             );
-            return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            return new JwtToken
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(tokenOptions),
+                ExpiryDate = expiryDate
+            };
         }
     }
 }

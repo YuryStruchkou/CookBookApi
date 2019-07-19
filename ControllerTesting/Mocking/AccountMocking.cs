@@ -26,7 +26,7 @@ namespace Testing.Mocking
             var userManager = MockUserManager().Object;
             var mapper = SetupMapper();
             return new AccountController(userManager, mapper, new JwtFactory("https://localhost:44342/", "gyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy", 60),
-                new RefreshTokenFactory(1024));
+                new RefreshTokenFactory(1024, 60));
         }
 
         private Mock<UserManager<ApplicationUser>> MockUserManager()
