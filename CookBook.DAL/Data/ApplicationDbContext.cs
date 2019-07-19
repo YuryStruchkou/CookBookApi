@@ -25,6 +25,7 @@ namespace CookBook.DAL.Data
             builder.SetupRequiredColumns();
             builder.SetupRelations();
             builder.SetupEnumConversions();
+            builder.SetupIndices();
         }
     }
 }

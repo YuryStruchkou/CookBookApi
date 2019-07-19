@@ -1,4 +1,5 @@
-﻿using CookBook.DAL.Data;
+﻿using System;
+using CookBook.DAL.Data;
 using CookBook.Domain.Models;
 using CookBook.Presentation.Filters;
 using CookBook.Presentation.Helpers;
@@ -19,7 +20,7 @@ namespace CookBook.Presentation
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -32,7 +33,9 @@ namespace CookBook.Presentation
             services.AddJwtAuthentication(Configuration);
             services.AddAuthorizationPolicies();
             services.AddScoped<JwtFactory>(sp =>
-                new JwtFactory(Configuration["Tokens:Issuer"], Configuration["Tokens:Key"]));
+                new JwtFactory(Configuration["Tokens:Issuer"], Configuration["Tokens:Key"], Convert.ToInt32(Configuration["Tokens:ValidForMinutes"])));
+            services.AddScoped<RefreshTokenFactory>(sp =>
+                new RefreshTokenFactory(Convert.ToInt32(Configuration["Tokens:RefreshTokenBytes"])));
             services.AddIdentity<ApplicationUser, IdentityRole<int>>(IdentityOptionsHelper.ConfigureIdentityOptions)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.RegisterCustomServices();

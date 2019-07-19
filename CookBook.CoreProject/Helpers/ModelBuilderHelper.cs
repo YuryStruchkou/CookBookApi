@@ -1,8 +1,6 @@
 ﻿using System;
-using CookBook.CoreProject.Constants;
 using CookBook.Domain.Enums;
 using CookBook.Domain.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace CookBook.CoreProject.Helpers
@@ -11,6 +9,9 @@ namespace CookBook.CoreProject.Helpers
     {
         public static void SetupPrimaryKeys(this ModelBuilder builder)
         {
+            builder.Entity<RefreshToken>()
+                .HasKey(t => t.Token);
+
             builder.Entity<UserProfile>()
                 .HasKey(u => u.UserId);
 
@@ -52,6 +53,13 @@ namespace CookBook.CoreProject.Helpers
 
         public static void SetupRequiredColumns(this ModelBuilder builder)
         {
+            builder.Entity<RefreshToken>()
+                .Property(t => t.ExpiryDate)
+                .IsRequired();
+            builder.Entity<RefreshToken>()
+                .Property(t => t.UserId)
+                .IsRequired();
+
             builder.Entity<UserProfile>()
                 .Property(u => u.IsMuted)
                 .IsRequired();
@@ -92,6 +100,12 @@ namespace CookBook.CoreProject.Helpers
 
         public static void SetupRelations(this ModelBuilder builder)
         {
+            builder.Entity<RefreshToken>()
+                .HasOne(t => t.User)
+                .WithMany(u => u.RefreshTokens)
+                .HasForeignKey(t => t.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.Entity<UserProfile>()
                 .HasOne(up => up.ApplicationUser)
                 .WithOne(u => u.UserProfile)
@@ -149,6 +163,12 @@ namespace CookBook.CoreProject.Helpers
             builder.Entity<Recipe>()
                 .Property(u => u.RecipeStatus)
                 .HasConversion(s => s.ToString(), s => Enum.Parse<RecipeStatus>(s));
+        }
+
+        public static void SetupIndices(this ModelBuilder builder)
+        {
+            builder.Entity<RefreshToken>()
+                .HasIndex(u => u.ExpiryDate);
         }
     }
 }

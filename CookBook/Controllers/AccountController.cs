@@ -24,14 +24,15 @@ namespace CookBook.Presentation.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly JwtFactory _jwtFactory;
+        private readonly RefreshTokenFactory _refreshTokenFactory;
         private readonly IMapper _mapper;
-        private const int TokenLifetime = 60;
 
-        public AccountController(UserManager<ApplicationUser> userManager, IMapper mapper, JwtFactory jwtFactory)
+        public AccountController(UserManager<ApplicationUser> userManager, IMapper mapper, JwtFactory jwtFactory, RefreshTokenFactory refreshTokenFactory)
         {
             _userManager = userManager;
             _mapper = mapper;
             _jwtFactory = jwtFactory;
+            _refreshTokenFactory = refreshTokenFactory;
         }
 
         [HttpPost, Route("register"), AllowAnonymous]
@@ -59,7 +60,7 @@ namespace CookBook.Presentation.Controllers
             var claims = await GetClaimsIdentity(user);
             return new OkObjectResult(new LoginResultDto
             {
-                JwtToken = _jwtFactory.GenerateEncodedToken(claims, TokenLifetime),
+                JwtToken = _jwtFactory.GenerateEncodedToken(claims),
                 UserName = user.UserName
             });
         }
