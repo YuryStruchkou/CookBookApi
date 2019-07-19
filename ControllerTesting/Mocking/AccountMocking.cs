@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CookBook.CoreProject.Constants;
+using CookBook.CoreProject.Interfaces;
 using CookBook.Domain.Mappers;
 using CookBook.Domain.Models;
 using CookBook.Presentation.Controllers;
 using CookBook.Presentation.JWT;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 
@@ -21,12 +23,16 @@ namespace Testing.Mocking
             PasswordHash = "pass"
         };
 
+        public Mock<UserManager<ApplicationUser>> MockedUserManager { get; private set; }
+
+        public Mock<ICookieService> MockedCookieService { get; private set; }
+
         public override AccountController Setup()
         {
-            var userManager = MockUserManager().Object;
-            var mapper = SetupMapper();
-            return new AccountController(userManager, mapper, new JwtFactory("https://localhost:44342/", "gyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy", 60),
-                new RefreshTokenFactory(1024, 60));
+            MockedUserManager = MockUserManager();
+            MockedCookieService = MockCookieService();
+            return new AccountController(MockedUserManager.Object, SetupMapper(), new JwtFactory("https://localhost:44342/", "gyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy", 60),
+                new RefreshTokenFactory(128, 60), MockedCookieService.Object); ;
         }
 
         private Mock<UserManager<ApplicationUser>> MockUserManager()
@@ -69,6 +75,15 @@ namespace Testing.Mocking
         {
             return _users.Select(user => user.UserName.ToLower()).Any(name => name == u.UserName.ToLower())
                    || _users.Select(user => user.Email.ToLower()).Any(name => name == u.Email.ToLower());
+        }
+
+        private Mock<ICookieService> MockCookieService()
+        {
+            var mock = new Mock<ICookieService>();
+            var token = "token";
+            mock.Setup(m => m.WriteHttpOnlyCookie(It.IsAny<string>(), token));
+            mock.Setup(m => m.TryGetCookie(It.IsAny<string>(), out token));
+            return mock;
         }
     }
 }

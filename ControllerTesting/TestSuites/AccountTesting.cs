@@ -1,13 +1,17 @@
-﻿using System.Net;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using CookBook.CoreProject.Helpers;
 using CookBook.Domain.Enums;
+using CookBook.Domain.Models;
 using CookBook.Domain.ResultDtos;
 using CookBook.Domain.ResultDtos.AccountDtos;
 using CookBook.Domain.ViewModels.AccountViewModels;
 using CookBook.Presentation.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Moq;
 using Testing.Helpers;
 using Testing.Mocking;
 using Xunit;
@@ -18,12 +22,13 @@ namespace Testing.TestSuites
     {
         private readonly AccountController _controller;
         private readonly ActionExecutingContext _context;
+        private readonly AccountMocking _mocker;
 
         public AccountTesting()
         {
-            var mocker = new AccountMocking();
-            _controller = mocker.Setup();
-            _context = mocker.SetupContext(_controller);
+            _mocker = new AccountMocking();
+            _controller = _mocker.Setup();
+            _context = _mocker.SetupContext(_controller);
         }
 
         [Fact]
@@ -139,7 +144,6 @@ namespace Testing.TestSuites
         {
             Assert.NotNull(data.JwtToken);
             Assert.NotEqual(default, data.ExpiryDate);
-            Assert.NotNull(data.RefreshToken);
             Assert.NotNull(data.UserName);
         }
 
@@ -171,6 +175,55 @@ namespace Testing.TestSuites
             var json = (BadRequestObjectResult)await _controller.Login(model);
             var error = (ErrorDto)json.Value;
             Assert.Equal("Incorrect username and/or password.", error.Errors[0]);
+        }
+
+        [Fact]
+        public async Task RefreshTokenOk()
+        {
+            var model = CreateDefaultRefreshTokenViewModel();
+            var token = "token";
+            _mocker.MockedUserManager.Setup(m => m.FindByNameAsync("user1")).ReturnsAsync(new ApplicationUser
+            {
+                UserName = "user1",
+                RefreshTokens = new List<RefreshToken> { new RefreshToken { Token = token, ExpiryDate = DateTime.Now.AddDays(1) } }
+            });
+
+            var json = (OkObjectResult)await _controller.Refresh(model);
+            var data = (LoginResultDto)json.Value;
+
+            AssertLoggedInSuccessfully(data);
+        }
+
+        private RefreshTokenViewModel CreateDefaultRefreshTokenViewModel()
+        {
+            return new RefreshTokenViewModel
+            {
+                UserName = "user1"
+            };
+        }
+
+        [Fact]
+        public async Task RefreshTokenIncorrectToken()
+        {
+            var model = CreateDefaultRefreshTokenViewModel();
+            var json = (UnauthorizedObjectResult)await _controller.Refresh(model);
+            var error = (ErrorDto)json.Value;
+            Assert.Equal("Incorrect username or refresh token.", error.Errors[0]);
+        }
+
+        [Fact]
+        public async Task RefreshTokenExpiredToken()
+        {
+            var model = CreateDefaultRefreshTokenViewModel();
+            _mocker.MockedUserManager.Setup(m => m.FindByNameAsync("user1")).ReturnsAsync(new ApplicationUser
+            {
+                RefreshTokens = new List<RefreshToken> {new RefreshToken {ExpiryDate = DateTime.Now.AddDays(-1), Token = "token"}}
+            });
+
+            var json = (UnauthorizedObjectResult)await _controller.Refresh(model);
+            var error = (ErrorDto)json.Value;
+            Assert.Equal("Token expired.", error.Errors[0]);
+            _mocker.MockedUserManager.Verify(u => u.UpdateAsync(It.IsAny<ApplicationUser>()), Times.Once);
         }
     }
 }

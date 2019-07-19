@@ -6,6 +6,7 @@ using CookBook.Presentation.Helpers;
 using CookBook.Presentation.JWT;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -30,7 +31,7 @@ namespace CookBook.Presentation
                 options.UseLazyLoadingProxies().UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.OverrideDefaultModelValidation<ModelValidationAttribute>();
             services.AddCors();
-            services.AddJwtAuthentication(Configuration);
+            services.AddJwtAndCookieAuthentication(Configuration);
             services.AddAuthorizationPolicies();
             services.AddScoped<JwtFactory>(sp =>
                 new JwtFactory(Configuration["Tokens:Issuer"], Configuration["Tokens:Key"], Convert.ToInt32(Configuration["Tokens:ValidForMinutes"])));
@@ -38,6 +39,7 @@ namespace CookBook.Presentation
                 new RefreshTokenFactory(Convert.ToInt32(Configuration["Tokens:RefreshTokenBytes"]), Convert.ToInt32(Configuration["Tokens:RefreshValidForDays"])));
             services.AddIdentity<ApplicationUser, IdentityRole<int>>(IdentityOptionsHelper.ConfigureIdentityOptions)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
             services.RegisterCustomServices();
             services.AddAutoMapperProfiles();
             services.AddMvc();

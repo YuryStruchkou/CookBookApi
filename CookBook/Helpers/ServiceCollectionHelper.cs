@@ -10,6 +10,8 @@ using CookBook.CoreProject.Helpers;
 using CookBook.CoreProject.Interfaces;
 using CookBook.Domain.Mappers;
 using CookBook.Domain.ResultDtos;
+using CookBook.Presentation.Cookies;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +26,7 @@ namespace CookBook.Presentation.Helpers
 {
     public static class ServiceCollectionHelper
     {
-        public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration config)
+        public static void AddJwtAndCookieAuthentication(this IServiceCollection services, IConfiguration config)
         {
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -90,6 +92,7 @@ namespace CookBook.Presentation.Helpers
         public static void RegisterCustomServices(this IServiceCollection services)
         {
             services.AddScoped<IRecipeService, RecipeService>();
+            services.AddScoped<ICookieService, CookieService>();
         }
     }
 }
