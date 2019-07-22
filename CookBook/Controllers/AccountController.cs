@@ -80,7 +80,7 @@ namespace CookBook.Presentation.Controllers
         {
             var jwtToken = await GenerateJwtToken(user);
             var refreshToken = await GenerateAndSaveRefreshToken(user);
-            _cookieService.WriteHttpOnlyCookie(RefreshTokenCookieKey, refreshToken.Token);
+            _cookieService.WriteHttpOnlyCookie(RefreshTokenCookieKey, refreshToken.Token, refreshToken.ExpiryDate);
             return new OkObjectResult(new LoginResultDto
             {
                 JwtToken = jwtToken.Token,

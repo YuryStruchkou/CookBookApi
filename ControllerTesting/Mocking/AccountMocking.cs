@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CookBook.CoreProject.Constants;
 using CookBook.CoreProject.Interfaces;
@@ -81,7 +82,7 @@ namespace Testing.Mocking
         {
             var mock = new Mock<ICookieService>();
             var token = "token";
-            mock.Setup(m => m.WriteHttpOnlyCookie(It.IsAny<string>(), token));
+            mock.Setup(m => m.WriteHttpOnlyCookie(It.IsAny<string>(), token, It.IsAny<DateTime?>()));
             mock.Setup(m => m.TryGetCookie(It.IsAny<string>(), out token));
             return mock;
         }

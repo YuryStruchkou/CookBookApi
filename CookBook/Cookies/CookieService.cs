@@ -1,4 +1,5 @@
-﻿using CookBook.CoreProject.Interfaces;
+﻿using System;
+using CookBook.CoreProject.Interfaces;
 using CookBook.Presentation.Helpers;
 using Microsoft.AspNetCore.Http;
 
@@ -13,9 +14,9 @@ namespace CookBook.Presentation.Cookies
             _contextAccessor = contextAccessor;
         }
 
-        public void WriteHttpOnlyCookie(string key, string value)
+        public void WriteHttpOnlyCookie(string key, string value, DateTime? expiryDate = null)
         {
-            _contextAccessor.HttpContext.AppendHttpOnlyCookie(key, value);
+            _contextAccessor.HttpContext.AppendHttpOnlyCookie(key, value, expiryDate);
         }
 
         public bool TryGetCookie(string key, out string value)

@@ -26,7 +26,7 @@ namespace CookBook.Presentation.Helpers
 {
     public static class ServiceCollectionHelper
     {
-        public static void AddJwtAndCookieAuthentication(this IServiceCollection services, IConfiguration config)
+        public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration config)
         {
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>

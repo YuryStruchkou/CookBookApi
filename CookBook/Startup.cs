@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using CookBook.DAL.Data;
 using CookBook.Domain.Models;
 using CookBook.Presentation.Filters;
@@ -31,7 +32,7 @@ namespace CookBook.Presentation
                 options.UseLazyLoadingProxies().UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.OverrideDefaultModelValidation<ModelValidationAttribute>();
             services.AddCors();
-            services.AddJwtAndCookieAuthentication(Configuration);
+            services.AddJwtAuthentication(Configuration);
             services.AddAuthorizationPolicies();
             services.AddScoped<JwtFactory>(sp =>
                 new JwtFactory(Configuration["Tokens:Issuer"], Configuration["Tokens:Key"], Convert.ToInt32(Configuration["Tokens:ValidForMinutes"])));
@@ -55,7 +56,8 @@ namespace CookBook.Presentation
 
             roleManager.SeedRoles().Wait();
             app.UseExceptionMiddleware();
-            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            app.UseCors(builder => builder.WithOrigins(Configuration.GetSection("Cors:Origins").Get<string[]>())
+                .AllowCredentials().AllowAnyHeader().AllowAnyMethod());
             app.UseAuthentication();
             app.UseMvc();
         }
