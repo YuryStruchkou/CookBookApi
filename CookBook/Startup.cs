@@ -39,7 +39,7 @@ namespace CookBook.Presentation
                 new RefreshTokenFactory(Convert.ToInt32(Configuration["Tokens:RefreshTokenBytes"]), Convert.ToInt32(Configuration["Tokens:RefreshValidForDays"])));
             services.AddIdentity<ApplicationUser, IdentityRole<int>>(IdentityOptionsHelper.ConfigureIdentityOptions)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.RegisterCustomServices();
             services.AddAutoMapperProfiles();
             services.AddMvc();
