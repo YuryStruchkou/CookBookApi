@@ -83,7 +83,7 @@ namespace Testing.Mocking
             var mock = new Mock<ICookieService>();
             var token = "token";
             mock.Setup(m => m.WriteHttpOnlyCookie(It.IsAny<string>(), token, It.IsAny<DateTime?>()));
-            mock.Setup(m => m.TryGetCookie(It.IsAny<string>(), out token));
+            mock.Setup(m => m.TryGetCookie(It.IsAny<string>(), out token)).Returns(true);
             return mock;
         }
     }

@@ -118,7 +118,7 @@ namespace CookBook.Presentation.Controllers
         public async Task<IActionResult> Refresh([FromBody] RefreshTokenViewModel model)
         {
             var user = await _userManager.FindByNameAsync(model.UserName);
-            if (user == null || _cookieService.TryGetCookie(RefreshTokenCookieKey, out var token) || 
+            if (user == null || !_cookieService.TryGetCookie(RefreshTokenCookieKey, out var token) || 
                 user.RefreshTokens.All(t => t.Token != token))
             {
                 return new UnauthorizedObjectResult(new ErrorDto((int)HttpStatusCode.Unauthorized, "Incorrect username or refresh token."));
