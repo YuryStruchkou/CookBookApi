@@ -115,15 +115,14 @@ namespace CookBook.Presentation.Controllers
         }
 
         [HttpPost, Route("refresh"), AllowAnonymous]
-        public async Task<IActionResult> Refresh([FromBody] RefreshTokenViewModel model)
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenLogoutViewModel model)
         {
             var user = await _userManager.FindByNameAsync(model.UserName);
-            if (user == null || !_cookieService.TryGetCookie(RefreshTokenCookieKey, out var token) || 
-                user.RefreshTokens.All(t => t.Token != token))
+            var userToken = GetRefreshToken(user);
+            if (userToken == null)
             {
                 return new UnauthorizedObjectResult(new ErrorDto((int)HttpStatusCode.Unauthorized, "Incorrect username or refresh token."));
             }
-            var userToken = user.RefreshTokens.First(t => t.Token == token);
             user.RefreshTokens.Remove(userToken);
             await _userManager.UpdateAsync(user);
             if (userToken.ExpiryDate < DateTime.Now)
@@ -131,6 +130,30 @@ namespace CookBook.Presentation.Controllers
                 return new UnauthorizedObjectResult(new ErrorDto((int)HttpStatusCode.Unauthorized, "Token expired."));
             }
             return await GenerateLoginResponse(user);
+        }
+
+        private RefreshToken GetRefreshToken(ApplicationUser user)
+        {
+            if (user == null || !_cookieService.TryGetCookie(RefreshTokenCookieKey, out var token) ||
+                user.RefreshTokens.All(t => t.Token != token))
+            {
+                return null;
+            }
+            return user.RefreshTokens.First(t => t.Token == token);
+        }
+
+        [HttpPost, Route("logout"), AllowAnonymous]
+        public async Task<IActionResult> Logout([FromBody] RefreshTokenLogoutViewModel model)
+        {
+            var user = await _userManager.FindByNameAsync(model.UserName);
+            var userToken = GetRefreshToken(user);
+            if (userToken == null)
+            {
+                return new NoContentResult();
+            }
+            user.RefreshTokens.Remove(userToken);
+            await _userManager.UpdateAsync(user);
+            return new NoContentResult();
         }
     }
 }

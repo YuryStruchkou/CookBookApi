@@ -194,9 +194,9 @@ namespace Testing.TestSuites
             AssertLoggedInSuccessfully(data);
         }
 
-        private RefreshTokenViewModel CreateDefaultRefreshTokenViewModel()
+        private RefreshTokenLogoutViewModel CreateDefaultRefreshTokenViewModel()
         {
-            return new RefreshTokenViewModel
+            return new RefreshTokenLogoutViewModel
             {
                 UserName = "user1"
             };
@@ -224,6 +224,22 @@ namespace Testing.TestSuites
             var error = (ErrorDto)json.Value;
             Assert.Equal("Token expired.", error.Errors[0]);
             _mocker.MockedUserManager.Verify(u => u.UpdateAsync(It.IsAny<ApplicationUser>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task LogoutOk()
+        {
+            var model = CreateDefaultRefreshTokenViewModel();
+            var token = "token";
+            _mocker.MockedUserManager.Setup(m => m.FindByNameAsync("user1")).ReturnsAsync(new ApplicationUser
+            {
+                UserName = "user1",
+                RefreshTokens = new List<RefreshToken> { new RefreshToken { Token = token, ExpiryDate = DateTime.Now.AddDays(1) } }
+            });
+
+            var result = (NoContentResult)await _controller.Logout(model);
+
+            Assert.NotNull(result);
         }
     }
 }
