@@ -124,10 +124,10 @@ namespace CookBook.Presentation.Controllers
                 return new UnauthorizedObjectResult(new ErrorDto((int)HttpStatusCode.Unauthorized, "Incorrect username or refresh token."));
             }
             var userToken = user.RefreshTokens.First(t => t.Token == token);
+            user.RefreshTokens.Remove(userToken);
+            await _userManager.UpdateAsync(user);
             if (userToken.ExpiryDate < DateTime.Now)
             {
-                user.RefreshTokens.Remove(userToken);
-                await _userManager.UpdateAsync(user);
                 return new UnauthorizedObjectResult(new ErrorDto((int)HttpStatusCode.Unauthorized, "Token expired."));
             }
             return await GenerateLoginResponse(user);
