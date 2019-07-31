@@ -7,7 +7,6 @@ using CookBook.Domain.Mappers;
 using CookBook.Domain.Models;
 using CookBook.Presentation.Controllers;
 using CookBook.Presentation.JWT;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 
@@ -17,7 +16,7 @@ namespace Testing.Mocking
     {
         private readonly List<ApplicationUser> _users = new List<ApplicationUser>();
 
-        private readonly ApplicationUser DefaultUser = new ApplicationUser
+        private readonly ApplicationUser _defaultUser = new ApplicationUser
         {
             UserName = "user1",
             Email = "user1@mailinator.com",
@@ -33,7 +32,7 @@ namespace Testing.Mocking
             MockedUserManager = MockUserManager();
             MockedCookieService = MockCookieService();
             return new AccountController(MockedUserManager.Object, SetupMapper(), new JwtFactory("https://localhost:44342/", "gyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy", 60),
-                new RefreshTokenFactory(128, 60), MockedCookieService.Object); ;
+                new RefreshTokenFactory(128, 60), MockedCookieService.Object);
         }
 
         private Mock<UserManager<ApplicationUser>> MockUserManager()
@@ -63,10 +62,10 @@ namespace Testing.Mocking
         private void MockLoginMethods(Mock<UserManager<ApplicationUser>> manager)
         {
             manager.Setup(m => m.FindByNameAsync("user1"))
-                .ReturnsAsync(DefaultUser);
+                .ReturnsAsync(_defaultUser);
             manager.Setup(m => m.FindByEmailAsync("user1@mailinator.com"))
-                .ReturnsAsync(DefaultUser);
-            manager.Setup(m => m.CheckPasswordAsync(DefaultUser, "pass"))
+                .ReturnsAsync(_defaultUser);
+            manager.Setup(m => m.CheckPasswordAsync(_defaultUser, "pass"))
                 .ReturnsAsync(true);
             manager.Setup(m => m.GetRolesAsync(It.IsAny<ApplicationUser>()))
                 .ReturnsAsync(new List<string>());

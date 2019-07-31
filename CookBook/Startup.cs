@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using CookBook.DAL.Data;
 using CookBook.Domain.Models;
 using CookBook.Presentation.Filters;
@@ -34,9 +33,9 @@ namespace CookBook.Presentation
             services.AddCors();
             services.AddJwtAuthentication(Configuration);
             services.AddAuthorizationPolicies();
-            services.AddScoped<JwtFactory>(sp =>
+            services.AddScoped(sp =>
                 new JwtFactory(Configuration["Tokens:Issuer"], Configuration["Tokens:Key"], Convert.ToInt32(Configuration["Tokens:ValidForMinutes"])));
-            services.AddScoped<RefreshTokenFactory>(sp =>
+            services.AddScoped(sp =>
                 new RefreshTokenFactory(Convert.ToInt32(Configuration["Tokens:RefreshTokenBytes"]), Convert.ToInt32(Configuration["Tokens:RefreshValidForDays"])));
             services.AddIdentity<ApplicationUser, IdentityRole<int>>(IdentityOptionsHelper.ConfigureIdentityOptions)
                 .AddEntityFrameworkStores<ApplicationDbContext>();

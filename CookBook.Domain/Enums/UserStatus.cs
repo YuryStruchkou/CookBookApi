@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.Design;
-
-namespace CookBook.Domain.Enums
+﻿namespace CookBook.Domain.Enums
 {
     public enum UserStatus
     {

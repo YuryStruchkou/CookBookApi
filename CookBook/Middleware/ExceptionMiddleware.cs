@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using CookBook.CoreProject.Helpers;
 using CookBook.Domain.ResultDtos;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 using Serilog;
 
 namespace CookBook.Presentation.Middleware
