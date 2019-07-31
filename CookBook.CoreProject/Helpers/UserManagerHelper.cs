@@ -9,7 +9,7 @@ namespace CookBook.CoreProject.Helpers
     {
         public static async Task<int?> GetCurrentUserIdAsync(this UserManager<ApplicationUser> userManager, ClaimsPrincipal user)
         {
-            var username = userManager.GetUserName(user);
+            var username = userManager.GetUserName(user) ?? "";
             return (await userManager.FindByNameAsync(username))?.Id;
         }
     }

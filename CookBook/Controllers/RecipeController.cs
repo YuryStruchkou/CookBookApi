@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using CookBook.CoreProject.Constants;
@@ -41,15 +42,18 @@ namespace CookBook.Presentation.Controllers
             return new OkObjectResult(result);
         }
 
-        [HttpGet, Route("{id}")]
+        [HttpGet, Route("{id}"), Authorize(AuthenticationSchemes = "Bearer"), AllowAnonymous]
         public async Task<IActionResult> GetRecipe([FromRoute] int id)
-        {
+        { 
             var recipe = await _recipeService.GetAsync(id);
             var result = _mapper.Map<Recipe, RecipeDto>(recipe);
             if (result == null)
             {
-                return new NotFoundObjectResult(new ErrorDto((int) HttpStatusCode.NotFound, "Recipe not found."));
+                return new NotFoundObjectResult(new ErrorDto((int)HttpStatusCode.NotFound, "Recipe not found."));
             }
+            var userId = await _userManager.GetCurrentUserIdAsync(User);
+            result.RecipeVoteData.UserVote = 
+                userId.HasValue ? recipe.Votes.FirstOrDefault(v => v.UserId == userId)?.Value : null;
             return new OkObjectResult(result);
         }
 
@@ -95,7 +99,7 @@ namespace CookBook.Presentation.Controllers
                 return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User does not exist."));
             }
             var vote = await _recipeService.AddVoteAsync(id, userId.Value, value);
-            var result = _mapper.Map<Vote, RecipeVoteDto>(vote);
+            var result = _mapper.Map<Recipe, RecipeVoteDto>(vote.Recipe);
             result.UserVote = value;
             return new OkObjectResult(result);
         }
