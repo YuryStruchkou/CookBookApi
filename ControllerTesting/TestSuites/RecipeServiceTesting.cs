@@ -12,9 +12,10 @@ using Xunit;
 
 namespace Testing.TestSuites
 {
-    public class RecipeServiceTesting
+    public class RecipeServiceTesting : IDisposable
     {
         private readonly RecipeService _service;
+        private readonly RecipeServiceMocking _mocker;
 
         public RecipeServiceTesting()
         {
@@ -22,8 +23,8 @@ namespace Testing.TestSuites
                 .UseInMemoryDatabase("test")
                 .EnableSensitiveDataLogging()
                 .Options;
-            var mocker = new RecipeServiceMocking(options);
-            _service = mocker.Setup();
+            _mocker = new RecipeServiceMocking(options);
+            _service = _mocker.Setup();
         }
 
         [Fact]
@@ -144,6 +145,47 @@ namespace Testing.TestSuites
 
             Assert.False(result);
             Assert.NotNull(await _service.GetAsync(id));
+        }
+
+        [Fact]
+        public async Task AddVoteOk()
+        {
+            var model = CreateDefaultCreateRecipeViewModel();
+            var addedRecipe = await _service.AddAsync(model, 1);
+
+            var vote = await _service.AddVoteAsync(addedRecipe.Id, addedRecipe.UserId.Value, 5);
+
+            Assert.Equal(addedRecipe.Id, vote.RecipeId);
+            Assert.Equal(addedRecipe.UserId, vote.UserId);
+            Assert.Equal(5, vote.Value);
+        }
+
+        [Fact]
+        public async Task AddVoteNotFoundRecipe()
+        {
+            var vote = await _service.AddVoteAsync(0, 0, 0);
+            Assert.Null(vote);
+        }
+
+        [Fact]
+        public async Task GetVotesOk()
+        {
+            var model = CreateDefaultCreateRecipeViewModel();
+            var addedRecipe = await _service.AddAsync(model, 1);
+
+            var result = await _service.GetAsync(addedRecipe.Id);
+            await _service.AddVoteAsync(addedRecipe.Id, 1, 5);
+            await _service.AddVoteAsync(addedRecipe.Id, 2, 5);
+            await _service.AddVoteAsync(addedRecipe.Id, 3, 4);
+            await _service.AddVoteAsync(addedRecipe.Id, 1, 4);
+
+            Assert.Equal(3, result.Votes.Count);
+            Assert.Equal((5 + 4 * 2) / 3.0, result.Votes.Average(v => v.Value));
+        }
+
+        public void Dispose()
+        {
+            _mocker.ClearContext();
         }
     }
 }

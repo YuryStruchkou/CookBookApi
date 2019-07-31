@@ -85,5 +85,19 @@ namespace CookBook.Presentation.Controllers
             await _recipeService.MarkAsDeletedAsync(id);
             return new NoContentResult();
         }
+
+        [HttpPost, Route("{id}/vote"), Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> AddVote([FromRoute] int id, [FromQuery] int value)
+        {
+            var userId = await _userManager.GetCurrentUserIdAsync(User);
+            if (!userId.HasValue)
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User does not exist."));
+            }
+            var vote = await _recipeService.AddVoteAsync(id, userId.Value, value);
+            var result = _mapper.Map<Vote, RecipeVoteDto>(vote);
+            result.UserVote = value;
+            return new OkObjectResult(result);
+        }
     }
 }

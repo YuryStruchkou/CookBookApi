@@ -34,6 +34,8 @@ namespace Testing.Mocking
             RecipeServiceMock.Setup(s => s.UpdateAsync(It.IsAny<CreateUpdateRecipeViewModel>(), It.IsAny<int>()))
                 .ReturnsAsync((CreateUpdateRecipeViewModel m, int id) => new Recipe { Id = id, Name = m.Name });
             RecipeServiceMock.Setup(s => s.MarkAsDeletedAsync(It.IsAny<int>())).ReturnsAsync((int id) => id > 0);
+            RecipeServiceMock.Setup(s => s.AddVoteAsync(It.Is<int>(id => id > 0), It.Is<int>(id => id > 0), It.Is<int>(id => id > 0)))
+                .ReturnsAsync((int recipeId, int userId, int voteValue) => new Vote{ RecipeId = recipeId, UserId = userId, Value = voteValue });
             return RecipeServiceMock;
         }
 

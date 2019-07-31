@@ -79,5 +79,26 @@ namespace CookBook.BLL.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<Vote> AddVoteAsync(int recipeId, int userId, int voteValue)
+        {
+            var recipe = _context.Recipes.Find(recipeId);
+            if (recipe == null) return null;
+            var vote = AddOrUpdateVoteInRecipe(recipe, userId, voteValue);
+            await _context.SaveChangesAsync();
+            return vote;
+        }
+
+        private Vote AddOrUpdateVoteInRecipe(Recipe recipe, int userId, int voteValue)
+        {
+            var vote = recipe.Votes.SingleOrDefault(v => v.UserId == userId);
+            if (vote == null)
+            {
+                vote = new Vote { UserId = userId };
+                recipe.Votes.Add(vote);
+            }
+            vote.Value = voteValue;
+            return vote;
+        }
     }
 }

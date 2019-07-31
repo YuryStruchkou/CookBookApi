@@ -16,6 +16,9 @@ namespace CookBook.Domain.Mappers
             CreateMap<Recipe, RecipeDto>()
                 .ForMember(r => r.Tags, src => src.MapFrom(r => r.RecipeTags.Select(rt => rt.Tag.Content)))
                 .ForMember(r => r.UserName, src => src.MapFrom(r => r.User.ApplicationUser.UserName));
+            CreateMap<Vote, RecipeVoteDto>()
+                .ForMember(v => v.TotalVotes, src => src.MapFrom(v => v.Recipe.Votes.Count))
+                .ForMember(v => v.AverageVote, src => src.MapFrom(v => v.Recipe.Votes.Average(vote => vote.Value)));
         }
     }
 }

@@ -200,5 +200,14 @@ namespace Testing.TestSuites
             Assert.Equal((int)HttpStatusCode.Forbidden, error.Code);
             Assert.Contains("User id does not match.", error.Errors);
         }
+
+        [Fact]
+        public async Task AddVoteOk()
+        {
+            var json = (OkObjectResult) await _controller.AddVote(1, 5);
+            var result = (RecipeVoteDto) json.Value;
+
+            Assert.NotNull(result);
+        }
     }
 }

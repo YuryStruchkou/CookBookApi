@@ -21,11 +21,7 @@ namespace CookBook.Domain.ResultDtos.RecipeDtos
 
         public DateTime? DeleteDate { get; set; }
 
-        public int TotalVotes { get; set; }
-        
-        public double AverageVote { get; set; }
-
-        public int? UserVote { get; set; }
+        public RecipeVoteDto RecipeVoteData { get; set; }
 
         public string UserName { get; set; }
 

@@ -13,5 +13,7 @@ namespace CookBook.CoreProject.Interfaces
         Task<Recipe> UpdateAsync(CreateUpdateRecipeViewModel model, int recipeId);
 
         Task<bool> MarkAsDeletedAsync(int id);
+
+        Task<Vote> AddVoteAsync(int recipeId, int userId, int voteValue);
     }
 }
