@@ -209,5 +209,20 @@ namespace Testing.TestSuites
 
             Assert.NotNull(result);
         }
+
+        [Fact]
+        public async Task GetCurrentUserVoteOk()
+        {
+            var user = SetupClaimsPrincipal();
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = user }
+            };
+
+            var json = (OkObjectResult)await _controller.GetCurrentUserVote(1);
+            var data = (CurrentUserVoteDto)json.Value;
+
+            Assert.True(data.VoteValue > 0);
+        }
     }
 }

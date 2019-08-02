@@ -47,14 +47,9 @@ namespace CookBook.Presentation.Controllers
         { 
             var recipe = await _recipeService.GetAsync(id);
             var result = _mapper.Map<Recipe, RecipeDto>(recipe);
-            if (result == null)
-            {
-                return new NotFoundObjectResult(new ErrorDto((int)HttpStatusCode.NotFound, "Recipe not found."));
-            }
-            var userId = await _userManager.GetCurrentUserIdAsync(User);
-            result.RecipeVoteData.UserVote = 
-                userId.HasValue ? recipe.Votes.FirstOrDefault(v => v.UserId == userId)?.Value : null;
-            return new OkObjectResult(result);
+            return result != null
+                ? (IActionResult) new OkObjectResult(result)
+                : new NotFoundObjectResult(new ErrorDto((int) HttpStatusCode.NotFound, "Recipe not found."));
         }
 
         [HttpPut, Route("{id}"), Authorize(AuthenticationSchemes = "Bearer")]
@@ -100,8 +95,16 @@ namespace CookBook.Presentation.Controllers
             }
             var vote = await _recipeService.AddVoteAsync(id, userId.Value, value);
             var result = _mapper.Map<Recipe, RecipeVoteDto>(vote.Recipe);
-            result.UserVote = value;
             return new OkObjectResult(result);
+        }
+
+        [HttpGet, Route("{id}/vote"), Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetCurrentUserVote([FromRoute] int id)
+        {
+            var recipe = await _recipeService.GetAsync(id);
+            var userId = await _userManager.GetCurrentUserIdAsync(User);
+            var voteValue = recipe != null && userId.HasValue ? recipe.Votes.FirstOrDefault(v => v.UserId == userId)?.Value : null;
+            return new OkObjectResult(new CurrentUserVoteDto(voteValue));
         }
     }
 }
