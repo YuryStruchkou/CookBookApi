@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CookBook.Domain.ResultDtos.RecipeDtos
 {
-    public class RecipeDto
+    public class RecipeDetailsDto
     {
         public int Id { get; set; }
 

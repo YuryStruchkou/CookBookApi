@@ -38,7 +38,7 @@ namespace CookBook.Presentation.Controllers
         {
             var userId = await _userManager.GetCurrentUserIdAsync(User);
             var recipe = await _recipeService.AddAsync(model, userId);
-            var result = _mapper.Map<Recipe, RecipeDto>(recipe);
+            var result = _mapper.Map<Recipe, RecipeDetailsDto>(recipe);
             return new OkObjectResult(result);
         }
 
@@ -46,7 +46,7 @@ namespace CookBook.Presentation.Controllers
         public async Task<IActionResult> GetRecipe([FromRoute] int id)
         { 
             var recipe = await _recipeService.GetAsync(id);
-            var result = _mapper.Map<Recipe, RecipeDto>(recipe);
+            var result = _mapper.Map<Recipe, RecipeDetailsDto>(recipe);
             return result != null
                 ? (IActionResult) new OkObjectResult(result)
                 : new NotFoundObjectResult(new ErrorDto((int) HttpStatusCode.NotFound, "Recipe not found."));
@@ -65,7 +65,7 @@ namespace CookBook.Presentation.Controllers
                 return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User id does not match."));
             }
             recipe = await _recipeService.UpdateAsync(model, recipe.Id);
-            var result = _mapper.Map<Recipe, RecipeDto>(recipe);
+            var result = _mapper.Map<Recipe, RecipeDetailsDto>(recipe);
             return new OkObjectResult(result);
         }
 

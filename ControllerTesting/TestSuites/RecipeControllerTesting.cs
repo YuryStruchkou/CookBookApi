@@ -36,7 +36,7 @@ namespace Testing.TestSuites
         {
             var model = CreateDefaultCreateRecipeViewModel();
             var json = (OkObjectResult)await _controller.CreateRecipe(model);
-            var result = (RecipeDto)json.Value;
+            var result = (RecipeDetailsDto)json.Value;
             Assert.NotNull(result);
         }
 
@@ -75,7 +75,7 @@ namespace Testing.TestSuites
         public async Task GetRecipeOk()
         {
             var json = (OkObjectResult)await _controller.GetRecipe(5);
-            var result = (RecipeDto) json.Value;
+            var result = (RecipeDetailsDto) json.Value;
 
             Assert.Equal(5, result.Id);
         }
@@ -100,7 +100,7 @@ namespace Testing.TestSuites
             };
 
             var json = (OkObjectResult) await _controller.UpdateRecipe(model, 1);
-            var result = (RecipeDto) json.Value;
+            var result = (RecipeDetailsDto) json.Value;
 
             Assert.NotNull(result);
         }
