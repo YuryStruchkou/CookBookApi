@@ -12,8 +12,4 @@
     <ProjectReference Include="..\CookBook.Domain\CookBook.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="QueryableExtensions\" />
-  </ItemGroup>
-
 </Project>

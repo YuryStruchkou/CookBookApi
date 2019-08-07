@@ -7,5 +7,7 @@
         public string Name { get; set; }
 
         public double AverageVote { get; set; }
+
+        public string RecipeStatus { get; set; }
     }
 }

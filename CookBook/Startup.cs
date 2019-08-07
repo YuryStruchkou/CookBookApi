@@ -46,13 +46,8 @@ namespace CookBook.Presentation
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, RoleManager<IdentityRole<int>> roleManager)
+        public void Configure(IApplicationBuilder app, RoleManager<IdentityRole<int>> roleManager)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
             roleManager.SeedRoles().Wait();
             app.UseExceptionMiddleware();
             app.UseCors(builder => builder.WithOrigins(Configuration.GetSection("Cors:Origins").Get<string[]>())
