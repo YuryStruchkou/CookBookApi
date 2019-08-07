@@ -90,6 +90,7 @@ namespace CookBook.Presentation.Helpers
         {
             services.AddScoped<IRecipeService, RecipeService>();
             services.AddScoped<ICookieService, CookieService>();
+            services.AddScoped<IUserService, UserService>();
         }
     }
 }

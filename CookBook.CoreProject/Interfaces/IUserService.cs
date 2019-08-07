@@ -5,6 +5,6 @@ namespace CookBook.CoreProject.Interfaces
 {
     public interface IUserService
     {
-        Task<UserProfile> GetUser(int id);
+        Task<UserProfile> GetAsync(int id);
     }
 }

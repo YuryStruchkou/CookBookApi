@@ -22,9 +22,9 @@ namespace Testing.Mocking
 
         private Mock<IUserService> MockUserService()
         {
-            UserServiceMock.Setup(u => u.GetUser(It.Is<int>(id => id > 0)))
+            UserServiceMock.Setup(u => u.GetAsync(It.Is<int>(id => id > 0)))
                 .ReturnsAsync((int id) => new UserProfile { UserId = id, ApplicationUser = new ApplicationUser { Id = id, UserName = DefaultName }});
-            UserServiceMock.Setup(u => u.GetUser(It.Is<int>(id => id <= 0)))
+            UserServiceMock.Setup(u => u.GetAsync(It.Is<int>(id => id <= 0)))
                 .ReturnsAsync((int id) => null);
             return UserServiceMock;
         }

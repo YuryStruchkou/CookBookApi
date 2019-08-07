@@ -25,7 +25,7 @@ namespace CookBook.Presentation.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser([FromRoute] int id)
         {
-            var user = await _userService.GetUser(id);
+            var user = await _userService.GetAsync(id);
             if (user == null)
             {
                 return new NotFoundObjectResult(new ErrorDto((int)HttpStatusCode.NotFound, "User does not exist."));
