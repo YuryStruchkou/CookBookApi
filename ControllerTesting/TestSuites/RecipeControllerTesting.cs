@@ -44,10 +44,10 @@ namespace Testing.TestSuites
         {
             return new CreateUpdateRecipeViewModel
             {
-                Name = "Name",
-                Description = "A short description",
-                Content = "A very very long description",
-                Tags = new List<string> { "tag1", "tag2" }
+                Name = MockConstants.DefaultRecipe.Name,
+                Description = MockConstants.DefaultRecipe.Description,
+                Content = MockConstants.DefaultRecipe.Content,
+                Tags = MockConstants.DefaultTags
             };
         }
 
@@ -66,9 +66,7 @@ namespace Testing.TestSuites
             var error = AttributeHelper.ExecuteModelValidation(_context);
 
             Assert.Equal((int)HttpStatusCode.BadRequest, error.Code);
-            Assert.Contains("The Name field is required.", error.Errors);
-            Assert.Contains("The Description field is required.", error.Errors);
-            Assert.Contains("The Content field is required.", error.Errors);
+            Assert.NotEmpty(error.Errors);
         }
 
         [Fact]
@@ -87,7 +85,7 @@ namespace Testing.TestSuites
             var error = (ErrorDto)json.Value;
 
             Assert.Equal((int)HttpStatusCode.NotFound, error.Code);
-            Assert.Contains("Recipe not found.", error.Errors);
+            Assert.NotEmpty(error.Errors);
         }
 
         [Fact]
@@ -129,7 +127,7 @@ namespace Testing.TestSuites
             var error = (ErrorDto)json.Value;
 
             Assert.Equal((int) HttpStatusCode.Forbidden, error.Code);
-            Assert.Contains("User id does not match.", error.Errors);
+            Assert.NotEmpty(error.Errors);
         }
 
         [Fact]
@@ -145,7 +143,7 @@ namespace Testing.TestSuites
             var error = (ErrorDto)json.Value;
 
             Assert.Equal((int)HttpStatusCode.NotFound, error.Code);
-            Assert.Contains("Recipe not found.", error.Errors);
+            Assert.NotEmpty(error.Errors);
         }
 
         [Fact]
@@ -182,7 +180,7 @@ namespace Testing.TestSuites
             var error = (ErrorDto) json.Value;
 
             Assert.Equal((int) HttpStatusCode.NotFound, error.Code);
-            Assert.Contains("Recipe not found.", error.Errors);
+            Assert.NotEmpty(error.Errors);
         }
 
         [Fact]
@@ -198,7 +196,7 @@ namespace Testing.TestSuites
             var error = (ErrorDto)json.Value;
 
             Assert.Equal((int)HttpStatusCode.Forbidden, error.Code);
-            Assert.Contains("User id does not match.", error.Errors);
+            Assert.NotEmpty(error.Errors);
         }
     }
 }

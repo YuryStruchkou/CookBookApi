@@ -40,7 +40,7 @@ namespace Testing.TestSuites
             model.Tags.Sort();
             resultTags.Sort();
             Assert.Equal(model.Tags, resultTags);
-            Assert.NotEqual(default(DateTime), result.CreationDate);
+            Assert.NotEqual(default, result.CreationDate);
             Assert.Equal(RecipeStatus.Active, result.RecipeStatus);
             Assert.Equal(1, result.UserId);
         }
@@ -49,10 +49,10 @@ namespace Testing.TestSuites
         {
             return new CreateUpdateRecipeViewModel
             {
-                Name = "Name",
-                Description = "A short description",
-                Content = "A very very long description",
-                Tags = new List<string>() {"tag1", "tag2"}
+                Name = MockConstants.DefaultRecipe.Name,
+                Description = MockConstants.DefaultRecipe.Description,
+                Content = MockConstants.DefaultRecipe.Content,
+                Tags = MockConstants.DefaultTags
             };
         }
 
@@ -99,7 +99,7 @@ namespace Testing.TestSuites
             model.Tags.Sort();
             resultTags.Sort();
             Assert.Equal(model.Tags, resultTags);
-            Assert.NotEqual(default(DateTime), result.CreationDate);
+            Assert.NotEqual(default, result.CreationDate);
             Assert.NotNull(result.EditDate);
             Assert.Equal(RecipeStatus.Active, result.RecipeStatus);
             Assert.Equal(1, result.UserId);
