@@ -9,9 +9,7 @@ namespace CookBook.DAL.Data
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<int>, int>
     {
         public DbSet<UserProfile> UserProfiles { get; set; }
-        public DbSet<UserStatus> UserStatuses { get; set; }
         public DbSet<Recipe> Recipes { get; set; }
-        public DbSet<RecipeStatus> RecipeStatuses { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<RecipeTag> RecipeTags { get; set; }
         public DbSet<Comment> Comments { get; set; }
@@ -26,7 +24,8 @@ namespace CookBook.DAL.Data
             builder.SetupAlternateKeys();
             builder.SetupRequiredColumns();
             builder.SetupRelations();
-            builder.SeedData();
+            builder.SetupEnumConversions();
+            builder.SetupIndices();
         }
     }
 }

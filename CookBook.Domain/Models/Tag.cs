@@ -8,6 +8,6 @@ namespace CookBook.Domain.Models
 
         public string Content { get; set; }
 
-        public virtual ICollection<RecipeTag> RecipeTags { get; set; }
+        public virtual ICollection<RecipeTag> RecipeTags { get; set; } = new HashSet<RecipeTag>();
     }
 }

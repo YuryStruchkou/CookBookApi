@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2047
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CookBook.Presentation", "CookBook\CookBook.Presentation.csproj", "{C1C5A3EA-658B-4CD7-8001-51F83E51AE19}"
 EndProject
@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CookBook.Queries", "CookBoo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{CEEA7231-F1BD-4CDD-A7AB-B2F50D4E6652}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControllerTesting", "ControllerTesting\ControllerTesting.csproj", "{36527297-62B8-45C5-BEDC-16BBCAAFD8A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testing", "ControllerTesting\Testing.csproj", "{36527297-62B8-45C5-BEDC-16BBCAAFD8A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

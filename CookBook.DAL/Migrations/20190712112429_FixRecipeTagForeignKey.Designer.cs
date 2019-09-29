@@ -4,14 +4,16 @@ using CookBook.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CookBook.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190712112429_FixRecipeTagForeignKey")]
+    partial class FixRecipeTagForeignKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,24 +143,6 @@ namespace CookBook.DAL.Migrations
                     b.HasIndex("TagId");
 
                     b.ToTable("RecipeTags");
-                });
-
-            modelBuilder.Entity("CookBook.Domain.Models.RefreshToken", b =>
-                {
-                    b.Property<string>("Token")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("ExpiryDate");
-
-                    b.Property<int>("UserId");
-
-                    b.HasKey("Token");
-
-                    b.HasIndex("ExpiryDate");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RefreshToken");
                 });
 
             modelBuilder.Entity("CookBook.Domain.Models.Tag", b =>
@@ -354,14 +338,6 @@ namespace CookBook.DAL.Migrations
                     b.HasOne("CookBook.Domain.Models.Tag", "Tag")
                         .WithMany("RecipeTags")
                         .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("CookBook.Domain.Models.RefreshToken", b =>
-                {
-                    b.HasOne("CookBook.Domain.Models.ApplicationUser", "User")
-                        .WithMany("RefreshTokens")
-                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

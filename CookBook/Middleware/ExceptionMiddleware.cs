@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using CookBook.CoreProject.Helpers;
 using CookBook.Domain.ResultDtos;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -35,7 +36,7 @@ namespace CookBook.Presentation.Middleware
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             context.Response.ContentType = "application/json";
             var result = new ErrorDto(context.Response.StatusCode, "Internal server error.");
-            await context.Response.WriteAsync(JsonConvert.SerializeObject(result));
+            await context.Response.WriteAsync(JsonConvertHelper.SerializeObjectCamelCase(result));
         }
     }
 }

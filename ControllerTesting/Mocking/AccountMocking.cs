@@ -1,43 +1,34 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using AutoMapper;
 using CookBook.CoreProject.Constants;
+using CookBook.CoreProject.Interfaces;
 using CookBook.Domain.Mappers;
 using CookBook.Domain.Models;
 using CookBook.Presentation.Controllers;
 using CookBook.Presentation.JWT;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Routing;
 using Moq;
 
-namespace ControllerTesting.Mocking
+namespace Testing.Mocking
 {
-    class AccountMocking
+    class AccountMocking : BaseMocking<AccountController, AccountProfile>
     {
         private readonly List<ApplicationUser> _users = new List<ApplicationUser>();
 
-        private readonly ApplicationUser DefaultUser = new ApplicationUser
-        {
-            UserName = "user1",
-            Email = "user1@mailinator.com",
-            PasswordHash = "pass"
-        };
+        public Mock<UserManager<ApplicationUser>> MockedUserManager { get; private set; }
 
-        public ActionExecutingContext SetupContext(AccountController controller)
-        {
-            return new ActionExecutingContext(new ControllerContext(new ActionContext(new Mock<HttpContext>().Object, new RouteData(),
-                new ControllerActionDescriptor())), new List<IFilterMetadata>(),  new Dictionary<string, object>(), controller);
-        }
+        public Mock<ICookieService> MockedCookieService { get; private set; }
 
-        public AccountController SetupController()
+        public override AccountController Setup()
         {
-            var userManager = MockUserManager().Object;
-            var mapper = SetupMapper();
-            return new AccountController(userManager, mapper, new JwtFactory("https://localhost:44342/", "gyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"));
+            MockedUserManager = MockUserManager();
+            MockedCookieService = MockCookieService();
+            return new AccountController(MockedUserManager.Object, SetupMapper(), 
+                new JwtFactory(MockConstants.JwtIssuer, MockConstants.JwtKey, MockConstants.JwtValidForMinutes),
+                new RefreshTokenFactory(MockConstants.JwtRefreshTokenBytes, MockConstants.JwtRefreshTokenValidForDays),
+                MockedCookieService.Object);
         }
 
         private Mock<UserManager<ApplicationUser>> MockUserManager()
@@ -67,10 +58,10 @@ namespace ControllerTesting.Mocking
         private void MockLoginMethods(Mock<UserManager<ApplicationUser>> manager)
         {
             manager.Setup(m => m.FindByNameAsync("user1"))
-                .ReturnsAsync(DefaultUser);
+                .ReturnsAsync(MockConstants.DefaultUser);
             manager.Setup(m => m.FindByEmailAsync("user1@mailinator.com"))
-                .ReturnsAsync(DefaultUser);
-            manager.Setup(m => m.CheckPasswordAsync(DefaultUser, "pass"))
+                .ReturnsAsync(MockConstants.DefaultUser);
+            manager.Setup(m => m.CheckPasswordAsync(MockConstants.DefaultUser, "pass"))
                 .ReturnsAsync(true);
             manager.Setup(m => m.GetRolesAsync(It.IsAny<ApplicationUser>()))
                 .ReturnsAsync(new List<string>());
@@ -78,14 +69,17 @@ namespace ControllerTesting.Mocking
 
         private bool UserExists(ApplicationUser u)
         {
-            return _users.Select(user => user.UserName.ToLower()).Any(name => name == u.UserName.ToLower())
-                   || _users.Select(user => user.Email.ToLower()).Any(name => name == u.Email.ToLower());
+            return _users.Any(user => string.Equals(user.UserName, u.UserName, StringComparison.InvariantCultureIgnoreCase))
+                   || _users.Any(user => string.Equals(user.Email, u.Email, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        private IMapper SetupMapper()
+        private Mock<ICookieService> MockCookieService()
         {
-            var config = new MapperConfiguration(c => c.AddProfile<AccountProfile>());
-            return config.CreateMapper();
+            var mock = new Mock<ICookieService>();
+            var token = MockConstants.JwtToken;
+            mock.Setup(m => m.WriteHttpOnlyCookie(It.IsAny<string>(), token, It.IsAny<DateTime?>()));
+            mock.Setup(m => m.TryGetCookie(It.IsAny<string>(), out token)).Returns(true);
+            return mock;
         }
     }
 }

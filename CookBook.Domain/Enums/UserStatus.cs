@@ -2,7 +2,7 @@
 
 namespace CookBook.Domain.Enums
 {
-    public enum UserStatuses
+    public enum UserStatus
     {
         Active = 1,
         Pending = 2,
