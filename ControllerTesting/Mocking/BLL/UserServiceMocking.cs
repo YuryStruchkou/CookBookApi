@@ -4,7 +4,7 @@ using CookBook.Domain.Mappers;
 using CookBook.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Testing.Mocking
+namespace Testing.Mocking.BLL
 {
     class UserServiceMocking : BaseMocking<UserService, UserDetailsProfile>
     {

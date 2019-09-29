@@ -14,9 +14,10 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Moq;
 using Testing.Helpers;
 using Testing.Mocking;
+using Testing.Mocking.Presentation;
 using Xunit;
 
-namespace Testing.TestSuites
+namespace Testing.TestSuites.Presentation.UnitTests
 {
     public class RecipeControllerTesting
     {

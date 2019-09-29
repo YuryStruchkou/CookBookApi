@@ -3,7 +3,7 @@ using CookBook.DAL.Data;
 using CookBook.Domain.Mappers;
 using Microsoft.EntityFrameworkCore;
 
-namespace Testing.Mocking
+namespace Testing.Mocking.BLL
 {
     class RecipeServiceMocking : BaseMocking<RecipeService, RecipeProfile>
     {

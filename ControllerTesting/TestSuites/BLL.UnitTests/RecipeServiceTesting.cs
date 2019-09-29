@@ -8,9 +8,10 @@ using CookBook.Domain.Enums;
 using CookBook.Domain.ViewModels.RecipeViewModels;
 using Microsoft.EntityFrameworkCore;
 using Testing.Mocking;
+using Testing.Mocking.BLL;
 using Xunit;
 
-namespace Testing.TestSuites
+namespace Testing.TestSuites.BLL.UnitTests
 {
     public class RecipeServiceTesting : IDisposable
     {

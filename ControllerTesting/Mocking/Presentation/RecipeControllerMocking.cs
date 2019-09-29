@@ -7,7 +7,7 @@ using CookBook.Presentation.Controllers;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 
-namespace Testing.Mocking
+namespace Testing.Mocking.Presentation
 {
     class RecipeControllerMocking : BaseMocking<RecipeController, RecipeProfile>
     {

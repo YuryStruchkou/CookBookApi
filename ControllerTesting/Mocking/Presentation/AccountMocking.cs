@@ -10,7 +10,7 @@ using CookBook.Presentation.JWT;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 
-namespace Testing.Mocking
+namespace Testing.Mocking.Presentation
 {
     class AccountMocking : BaseMocking<AccountController, AccountProfile>
     {

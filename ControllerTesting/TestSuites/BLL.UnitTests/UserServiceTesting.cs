@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using CookBook.BLL.Services;
 using CookBook.DAL.Data;
 using Microsoft.EntityFrameworkCore;
-using Testing.Mocking;
+using Testing.Mocking.BLL;
 using Xunit;
 
-namespace Testing.TestSuites
+namespace Testing.TestSuites.BLL.UnitTests
 {
     public class UserServiceTesting : IDisposable
     {

@@ -1,11 +1,10 @@
-﻿using System;
-using CookBook.CoreProject.Interfaces;
+﻿using CookBook.CoreProject.Interfaces;
 using CookBook.Domain.Mappers;
 using CookBook.Domain.Models;
 using CookBook.Presentation.Controllers;
 using Moq;
 
-namespace Testing.Mocking
+namespace Testing.Mocking.Presentation
 {
     class UserControllerMocking : BaseMocking<UserController, UserDetailsProfile>
     {

@@ -3,10 +3,10 @@ using CookBook.Domain.ResultDtos;
 using CookBook.Domain.ResultDtos.UserDetailsDtos;
 using CookBook.Presentation.Controllers;
 using Microsoft.AspNetCore.Mvc;
-using Testing.Mocking;
+using Testing.Mocking.Presentation;
 using Xunit;
 
-namespace Testing.TestSuites
+namespace Testing.TestSuites.Presentation.UnitTests
 {
     public class UserControllerTesting
     {
