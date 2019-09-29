@@ -49,10 +49,10 @@ namespace Testing.TestSuites
         {
             return new RegistrationViewModel
             {
-                Email = "user@mailinator.com",
-                UserName = "user",
-                Password = "pass",
-                ConfirmPassword = "pass"
+                Email = MockConstants.DefaultUser.Email,
+                UserName = MockConstants.DefaultUser.UserName,
+                Password = MockConstants.DefaultPassword,
+                ConfirmPassword = MockConstants.DefaultPassword
             };
         }
 
@@ -66,7 +66,7 @@ namespace Testing.TestSuites
             var error = (ErrorDto)json.Value;
 
             Assert.Equal((int)HttpStatusCode.Conflict, error.Code);
-            Assert.Equal("User already exists.", error.Errors[0]);
+            Assert.NotEmpty(error.Errors);
         }
 
         [Fact]
@@ -85,26 +85,26 @@ namespace Testing.TestSuites
         public void ValidateUserPasswordsDontMatch()
         {
             var model = CreateDefaultRegisterViewModel();
-            model.ConfirmPassword = "pass1";
+            model.ConfirmPassword += "1";
             _context.ModelState.Validate(model);
 
             var error = AttributeHelper.ExecuteModelValidation(_context);
 
             Assert.Equal((int)HttpStatusCode.BadRequest, error.Code);
-            Assert.Equal("Passwords do not match.", error.Errors[0]);
+            Assert.NotEmpty(error.Errors);
         }
 
         [Fact]
         public void ValidateInvalidEmail()
         {
             var model = CreateDefaultRegisterViewModel();
-            model.Email = "user";
+            model.Email = "Invalid email";
             _context.ModelState.Validate(model);
 
             var error = AttributeHelper.ExecuteModelValidation(_context);
 
             Assert.Equal((int)HttpStatusCode.BadRequest, error.Code);
-            Assert.Equal("Invalid email format.", error.Errors[0]);
+            Assert.NotEmpty(error.Errors);
         }
 
         [Fact]
@@ -116,10 +116,7 @@ namespace Testing.TestSuites
             var error = AttributeHelper.ExecuteModelValidation(_context);
 
             Assert.Equal((int)HttpStatusCode.BadRequest, error.Code);
-            Assert.Contains("The Email field is required.", error.Errors);
-            Assert.Contains("The Username field is required.", error.Errors);
-            Assert.Contains("The Password field is required.", error.Errors);
-            Assert.Contains("The Confirm password field is required.", error.Errors);
+            Assert.NotEmpty(error.Errors);
         }
 
         [Fact]
@@ -135,8 +132,8 @@ namespace Testing.TestSuites
         {
             return new LoginViewModel
             {
-                UserNameOrEmail = "user1",
-                Password = "pass"
+                UserNameOrEmail = MockConstants.DefaultUser.UserName,
+                Password = MockConstants.DefaultPassword
             };
         }
 
@@ -151,7 +148,7 @@ namespace Testing.TestSuites
         public async Task TestLoginWithEmailOk()
         {
             var model = CreateDefaultLoginViewModel();
-            model.UserNameOrEmail = "user1@mailinator.com";
+            model.UserNameOrEmail = MockConstants.DefaultUser.Email;
             var json = (OkObjectResult)await _controller.Login(model);
             var data = (LoginResultDto)json.Value;
             AssertLoggedInSuccessfully(data);
@@ -161,10 +158,10 @@ namespace Testing.TestSuites
         public async Task TestLoginWithIncorrectPassword()
         {
             var model = CreateDefaultLoginViewModel();
-            model.Password = "*****************";
+            model.Password = "Incorrect password";
             var json = (BadRequestObjectResult)await _controller.Login(model);
             var error = (ErrorDto)json.Value;
-            Assert.Equal("Incorrect username and/or password.", error.Errors[0]);
+            Assert.NotEmpty(error.Errors);
         }
 
         [Fact]
@@ -174,17 +171,18 @@ namespace Testing.TestSuites
             model.UserNameOrEmail = "Incorrect username";
             var json = (BadRequestObjectResult)await _controller.Login(model);
             var error = (ErrorDto)json.Value;
-            Assert.Equal("Incorrect username and/or password.", error.Errors[0]);
+            Assert.Equal((int)HttpStatusCode.BadRequest, error.Code);
+            Assert.NotEmpty(error.Errors);
         }
 
         [Fact]
         public async Task RefreshTokenOk()
         {
             var model = CreateDefaultRefreshTokenViewModel();
-            var token = "token";
+            var token = MockConstants.JwtToken;
             _mocker.MockedUserManager.Setup(m => m.FindByNameAsync("user1")).ReturnsAsync(new ApplicationUser
             {
-                UserName = "user1",
+                UserName = MockConstants.DefaultUser.UserName,
                 RefreshTokens = new List<RefreshToken> { new RefreshToken { Token = token, ExpiryDate = DateTime.Now.AddDays(1) } }
             });
 
@@ -198,7 +196,7 @@ namespace Testing.TestSuites
         {
             return new RefreshTokenLogoutViewModel
             {
-                UserName = "user1"
+                UserName = MockConstants.DefaultUser.UserName
             };
         }
 
@@ -208,21 +206,24 @@ namespace Testing.TestSuites
             var model = CreateDefaultRefreshTokenViewModel();
             var json = (UnauthorizedObjectResult)await _controller.Refresh(model);
             var error = (ErrorDto)json.Value;
-            Assert.Equal("Incorrect username or refresh token.", error.Errors[0]);
+            Assert.NotEmpty(error.Errors);
         }
 
         [Fact]
         public async Task RefreshTokenExpiredToken()
         {
             var model = CreateDefaultRefreshTokenViewModel();
-            _mocker.MockedUserManager.Setup(m => m.FindByNameAsync("user1")).ReturnsAsync(new ApplicationUser
+            _mocker.MockedUserManager.Setup(m => m.FindByNameAsync(MockConstants.DefaultUser.UserName)).ReturnsAsync(new ApplicationUser
             {
-                RefreshTokens = new List<RefreshToken> {new RefreshToken {ExpiryDate = DateTime.Now.AddDays(-1), Token = "token"}}
+                RefreshTokens = new List<RefreshToken>
+                {
+                    new RefreshToken { ExpiryDate = DateTime.Now.AddDays(-1), Token = MockConstants.JwtToken }
+                }
             });
 
             var json = (UnauthorizedObjectResult)await _controller.Refresh(model);
             var error = (ErrorDto)json.Value;
-            Assert.Equal("Token expired.", error.Errors[0]);
+            Assert.NotEmpty(error.Errors);
             _mocker.MockedUserManager.Verify(u => u.UpdateAsync(It.IsAny<ApplicationUser>()), Times.Once);
         }
 
@@ -230,10 +231,10 @@ namespace Testing.TestSuites
         public async Task LogoutOk()
         {
             var model = CreateDefaultRefreshTokenViewModel();
-            var token = "token";
-            _mocker.MockedUserManager.Setup(m => m.FindByNameAsync("user1")).ReturnsAsync(new ApplicationUser
+            var token = MockConstants.JwtToken;
+            _mocker.MockedUserManager.Setup(m => m.FindByNameAsync(MockConstants.DefaultUser.UserName)).ReturnsAsync(new ApplicationUser
             {
-                UserName = "user1",
+                UserName = MockConstants.DefaultUser.UserName,
                 RefreshTokens = new List<RefreshToken> { new RefreshToken { Token = token, ExpiryDate = DateTime.Now.AddDays(1) } }
             });
 

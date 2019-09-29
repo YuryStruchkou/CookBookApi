@@ -16,13 +16,6 @@ namespace Testing.Mocking
     {
         private readonly List<ApplicationUser> _users = new List<ApplicationUser>();
 
-        private readonly ApplicationUser _defaultUser = new ApplicationUser
-        {
-            UserName = "user1",
-            Email = "user1@mailinator.com",
-            PasswordHash = "pass"
-        };
-
         public Mock<UserManager<ApplicationUser>> MockedUserManager { get; private set; }
 
         public Mock<ICookieService> MockedCookieService { get; private set; }
@@ -31,8 +24,10 @@ namespace Testing.Mocking
         {
             MockedUserManager = MockUserManager();
             MockedCookieService = MockCookieService();
-            return new AccountController(MockedUserManager.Object, SetupMapper(), new JwtFactory("https://localhost:44342/", "gyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy", 60),
-                new RefreshTokenFactory(128, 60), MockedCookieService.Object);
+            return new AccountController(MockedUserManager.Object, SetupMapper(), 
+                new JwtFactory(MockConstants.JwtIssuer, MockConstants.JwtKey, MockConstants.JwtValidForMinutes),
+                new RefreshTokenFactory(MockConstants.JwtRefreshTokenBytes, MockConstants.JwtRefreshTokenValidForDays),
+                MockedCookieService.Object);
         }
 
         private Mock<UserManager<ApplicationUser>> MockUserManager()
@@ -62,10 +57,10 @@ namespace Testing.Mocking
         private void MockLoginMethods(Mock<UserManager<ApplicationUser>> manager)
         {
             manager.Setup(m => m.FindByNameAsync("user1"))
-                .ReturnsAsync(_defaultUser);
+                .ReturnsAsync(MockConstants.DefaultUser);
             manager.Setup(m => m.FindByEmailAsync("user1@mailinator.com"))
-                .ReturnsAsync(_defaultUser);
-            manager.Setup(m => m.CheckPasswordAsync(_defaultUser, "pass"))
+                .ReturnsAsync(MockConstants.DefaultUser);
+            manager.Setup(m => m.CheckPasswordAsync(MockConstants.DefaultUser, "pass"))
                 .ReturnsAsync(true);
             manager.Setup(m => m.GetRolesAsync(It.IsAny<ApplicationUser>()))
                 .ReturnsAsync(new List<string>());
@@ -73,14 +68,14 @@ namespace Testing.Mocking
 
         private bool UserExists(ApplicationUser u)
         {
-            return _users.Select(user => user.UserName.ToLower()).Any(name => name == u.UserName.ToLower())
-                   || _users.Select(user => user.Email.ToLower()).Any(name => name == u.Email.ToLower());
+            return _users.Any(user => string.Equals(user.UserName, u.UserName, StringComparison.InvariantCultureIgnoreCase))
+                   || _users.Any(user => string.Equals(user.Email, u.Email, StringComparison.InvariantCultureIgnoreCase));
         }
 
         private Mock<ICookieService> MockCookieService()
         {
             var mock = new Mock<ICookieService>();
-            var token = "token";
+            var token = MockConstants.JwtToken;
             mock.Setup(m => m.WriteHttpOnlyCookie(It.IsAny<string>(), token, It.IsAny<DateTime?>()));
             mock.Setup(m => m.TryGetCookie(It.IsAny<string>(), out token)).Returns(true);
             return mock;
