@@ -92,9 +92,10 @@ namespace CookBook.BLL.Services
         {
             return _context.Recipes
                 .Where(r => r.RecipeStatus == RecipeStatus.Active)
+                .AsEnumerable() // TODO: Fix lazy loading issue
                 .OrderByDescending(r => r.GetAverageVote())
                 .ThenByDescending(r => r.Votes.Count)
-                .Take(count);
+                .Take(count).AsQueryable();
         }
 
         public IQueryable<Recipe> GetRecentRecipesAsync(int count)
