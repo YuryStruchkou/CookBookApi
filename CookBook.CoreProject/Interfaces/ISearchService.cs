@@ -14,5 +14,7 @@ namespace CookBook.CoreProject.Interfaces
         Task DeleteRecipeAsync(RecipeDocument recipe);
 
         Task<IEnumerable<RecipeDocument>> SearchAsync(string searchTerm, int page = 1, int pageSize = 10);
+
+        Task Reindex();
     }
 }
