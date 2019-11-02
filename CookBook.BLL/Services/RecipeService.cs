@@ -6,6 +6,7 @@ using AutoMapper;
 using CookBook.CoreProject.Interfaces;
 using CookBook.DAL.Data;
 using CookBook.Domain.Enums;
+using CookBook.Domain.Helpers;
 using CookBook.Domain.Models;
 using CookBook.Domain.ViewModels.RecipeViewModels;
 using CookBook.Queries.QueryableExtensions;
@@ -87,14 +88,21 @@ namespace CookBook.BLL.Services
             return vote;
         }
 
-        public Task<IEnumerable<Recipe>> GetPopularRecipesAsync(int count)
+        public IQueryable<Recipe> GetPopularRecipesAsync(int count)
         {
-            throw new NotImplementedException();
+            return _context.Recipes
+                .Where(r => r.RecipeStatus == RecipeStatus.Active)
+                .OrderByDescending(r => r.GetAverageVote())
+                .ThenByDescending(r => r.Votes.Count)
+                .Take(count);
         }
 
-        public Task<IEnumerable<Recipe>> GetRecentRecipesAsync(int count)
+        public IQueryable<Recipe> GetRecentRecipesAsync(int count)
         {
-            throw new NotImplementedException();
+            return _context.Recipes
+                .Where(r => r.RecipeStatus == RecipeStatus.Active)
+                .OrderByDescending(r => r.CreationDate)
+                .Take(count);
         }
     }
 }

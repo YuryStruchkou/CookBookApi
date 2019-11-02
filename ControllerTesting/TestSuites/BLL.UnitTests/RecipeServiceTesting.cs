@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CookBook.BLL.Services;
 using CookBook.DAL.Data;
 using CookBook.Domain.Enums;
+using CookBook.Domain.Models;
 using CookBook.Domain.ViewModels.RecipeViewModels;
 using Microsoft.EntityFrameworkCore;
 using Testing.Mocking;
@@ -182,6 +183,68 @@ namespace Testing.TestSuites.BLL.UnitTests
 
             Assert.Equal(3, result.Votes.Count);
             Assert.Equal((5 + 4 * 2) / 3.0, result.Votes.Average(v => v.Value));
+        }
+
+        [Theory]
+        [InlineData(2)]
+        [InlineData(4)]
+        [InlineData(10)]
+        [InlineData(-1)]
+        public async Task GetPopularRecipes(int count)
+        {
+            var model = CreateDefaultCreateRecipeViewModel();
+            var recipes = new List<Recipe>
+            {
+                await _service.AddAsync(model, 1),
+                await _service.AddAsync(model, 2), 
+                await _service.AddAsync(model, 3), 
+                await _service.AddAsync(model, 4)
+            };
+            await _service.AddVoteAsync(recipes[1].Id, 1, 5);
+            await _service.AddVoteAsync(recipes[1].Id, 2, 5);
+            await _service.AddVoteAsync(recipes[2].Id, 1, 4);
+            await _service.AddVoteAsync(recipes[0].Id, 1, 5);
+            var expectedPopularRecipes = new List<Recipe>
+            {
+                recipes[1], recipes[0], recipes[2], recipes[3]
+            };
+
+            var popularRecipes = _service.GetPopularRecipesAsync(count).ToList();
+
+            Assert.Equal(Math.Max(0, Math.Min(count, recipes.Count)), popularRecipes.Count);
+            for (int i = 0; i < popularRecipes.Count; i++)
+            {
+                Assert.Equal(expectedPopularRecipes[i].Id, popularRecipes[i].Id);
+            }
+        }
+
+        [Theory]
+        [InlineData(2)]
+        [InlineData(4)]
+        [InlineData(10)]
+        [InlineData(-1)]
+        public async Task GetRecentRecipes(int count)
+        {
+            var model = CreateDefaultCreateRecipeViewModel();
+            var recipes = new List<Recipe>
+            {
+                await _service.AddAsync(model, 1),
+                await _service.AddAsync(model, 2),
+                await _service.AddAsync(model, 3),
+                await _service.AddAsync(model, 4)
+            };
+            var expectedRecentRecipes = new List<Recipe>
+            {
+                recipes[3], recipes[2], recipes[1], recipes[0]
+            };
+
+            var recentRecipes = _service.GetRecentRecipesAsync(count).ToList();
+
+            Assert.Equal(Math.Max(0, Math.Min(count, recipes.Count)), recentRecipes.Count);
+            for (int i = 0; i < recentRecipes.Count; i++)
+            {
+                Assert.Equal(expectedRecentRecipes[i].Id, recentRecipes[i].Id);
+            }
         }
 
         public void Dispose()

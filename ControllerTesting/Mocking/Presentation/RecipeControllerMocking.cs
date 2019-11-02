@@ -53,12 +53,12 @@ namespace Testing.Mocking.Presentation
                 });
 
             RecipeServiceMock.Setup(s => s.GetPopularRecipesAsync(It.IsAny<int>()))
-                .ReturnsAsync((int count) => Enumerable.Repeat(new Recipe(), 
-                    Math.Max(0, Math.Min(count, MockConstants.TotalNumberOfRecipes))));
+                .Returns((int count) => Enumerable.Repeat(new Recipe(), 
+                    Math.Max(0, Math.Min(count, MockConstants.TotalNumberOfRecipes))).AsQueryable());
             
             RecipeServiceMock.Setup(s => s.GetRecentRecipesAsync(It.IsAny<int>()))
-                .ReturnsAsync((int count) => Enumerable.Repeat(new Recipe(),
-                    Math.Max(0, Math.Min(count, MockConstants.TotalNumberOfRecipes))));
+                .Returns((int count) => Enumerable.Repeat(new Recipe(),
+                    Math.Max(0, Math.Min(count, MockConstants.TotalNumberOfRecipes))).AsQueryable());
             
             return RecipeServiceMock;
         }

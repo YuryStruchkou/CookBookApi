@@ -14,6 +14,7 @@ using CookBook.Presentation.ObjectResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CookBook.Presentation.Controllers
 {
@@ -110,15 +111,15 @@ namespace CookBook.Presentation.Controllers
         [HttpGet, Route("popular"), AllowAnonymous]
         public async Task<IActionResult> GetPopularRecipes([FromQuery] int count)
         {
-            var recipes = await _recipeService.GetPopularRecipesAsync(count);
+            var recipes = _recipeService.GetPopularRecipesAsync(count).ToList();
             var resultDtos = recipes.Select(r => _mapper.Map<Recipe, RecipeBriefDto>(r));
             return new OkObjectResult(resultDtos.ToList());
         }
 
-        [HttpGet, Route("popular"), AllowAnonymous]
+        [HttpGet, Route("recent"), AllowAnonymous]
         public async Task<IActionResult> GetRecentRecipes([FromQuery] int count)
         {
-            var recipes = await _recipeService.GetRecentRecipesAsync(count);
+            var recipes = _recipeService.GetRecentRecipesAsync(count).ToList();
             var resultDtos = recipes.Select(r => _mapper.Map<Recipe, RecipeBriefDto>(r));
             return new OkObjectResult(resultDtos.ToList());
         }

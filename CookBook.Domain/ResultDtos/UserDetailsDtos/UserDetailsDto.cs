@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using CookBook.Domain.ResultDtos.RecipeDtos;
-using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
 
 namespace CookBook.Domain.ResultDtos.UserDetailsDtos
 {
