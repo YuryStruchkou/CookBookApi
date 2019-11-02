@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -42,6 +43,8 @@ namespace CookBook.BLL.Services
 
         public async Task<IEnumerable<RecipeDocument>> SearchAsync(string searchTerm, int page = 1, int pageSize = 10)
         {
+            page = Math.Max(1, page);
+            pageSize = Math.Max(1, pageSize);
             var results = await _elasticClient.SearchAsync<RecipeDocument>(
                 s => s.Query(q => q.QueryString(d => d.Query(searchTerm)))
                     .From((page - 1) * pageSize)
