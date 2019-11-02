@@ -106,5 +106,21 @@ namespace CookBook.Presentation.Controllers
             var voteValue = recipe != null && userId.HasValue ? recipe.Votes.FirstOrDefault(v => v.UserId == userId)?.Value : null;
             return new OkObjectResult(new CurrentUserVoteDto(voteValue));
         }
+
+        [HttpGet, Route("popular"), AllowAnonymous]
+        public async Task<IActionResult> GetPopularRecipes([FromQuery] int count)
+        {
+            var recipes = await _recipeService.GetPopularRecipesAsync(count);
+            var resultDtos = recipes.Select(r => _mapper.Map<Recipe, RecipeBriefDto>(r));
+            return new OkObjectResult(resultDtos.ToList());
+        }
+
+        [HttpGet, Route("popular"), AllowAnonymous]
+        public async Task<IActionResult> GetRecentRecipes([FromQuery] int count)
+        {
+            var recipes = await _recipeService.GetRecentRecipesAsync(count);
+            var resultDtos = recipes.Select(r => _mapper.Map<Recipe, RecipeBriefDto>(r));
+            return new OkObjectResult(resultDtos.ToList());
+        }
     }
 }

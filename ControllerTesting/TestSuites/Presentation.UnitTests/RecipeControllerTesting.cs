@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -222,6 +223,32 @@ namespace Testing.TestSuites.Presentation.UnitTests
             var data = (CurrentUserVoteDto)json.Value;
 
             Assert.True(data.VoteValue > 0);
+        }
+
+        [Theory]
+        [InlineData(MockConstants.TotalNumberOfRecipes - 1, MockConstants.TotalNumberOfRecipes - 1)]
+        [InlineData(MockConstants.TotalNumberOfRecipes, MockConstants.TotalNumberOfRecipes)]
+        [InlineData(MockConstants.TotalNumberOfRecipes + 1, MockConstants.TotalNumberOfRecipes)]
+        [InlineData(-1, 0)]
+        public async Task GetRecentRecipes(int count, int expectedLength)
+        {
+            var json = (OkObjectResult)await _controller.GetRecentRecipes(count);
+            var recipes = (List<RecipeBriefDto>) json.Value;
+
+            Assert.Equal(expectedLength, recipes.Count);
+        }
+
+        [Theory]
+        [InlineData(MockConstants.TotalNumberOfRecipes - 1, MockConstants.TotalNumberOfRecipes - 1)]
+        [InlineData(MockConstants.TotalNumberOfRecipes, MockConstants.TotalNumberOfRecipes)]
+        [InlineData(MockConstants.TotalNumberOfRecipes + 1, MockConstants.TotalNumberOfRecipes)]
+        [InlineData(-1, 0)]
+        public async Task GetPopularRecipes(int count, int expectedLength)
+        {
+            var json = (OkObjectResult)await _controller.GetPopularRecipes(count);
+            var recipes = (List<RecipeBriefDto>)json.Value;
+
+            Assert.Equal(expectedLength, recipes.Count);
         }
     }
 }

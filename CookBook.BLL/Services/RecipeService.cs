@@ -86,5 +86,15 @@ namespace CookBook.BLL.Services
             await _context.SaveChangesAsync();
             return vote;
         }
+
+        public Task<IEnumerable<Recipe>> GetPopularRecipesAsync(int count)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Recipe>> GetRecentRecipesAsync(int count)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

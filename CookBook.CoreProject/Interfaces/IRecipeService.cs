@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using CookBook.Domain.Models;
 using CookBook.Domain.ViewModels.RecipeViewModels;
 
@@ -15,5 +17,9 @@ namespace CookBook.CoreProject.Interfaces
         Task<bool> MarkAsDeletedAsync(int id);
 
         Task<Vote> AddVoteAsync(int recipeId, int userId, int voteValue);
+
+        Task<IEnumerable<Recipe>> GetPopularRecipesAsync(int count);
+
+        Task<IEnumerable<Recipe>> GetRecentRecipesAsync(int count);
     }
 }

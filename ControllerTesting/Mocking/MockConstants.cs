@@ -12,6 +12,7 @@ namespace Testing.Mocking
         public const int JwtRefreshTokenBytes = 128;
         public const int JwtRefreshTokenValidForDays = 60;
         public const string DefaultPassword = "pass";
+        public const int TotalNumberOfRecipes = 8;
         
         public static readonly ApplicationUser DefaultUser = new ApplicationUser
         {

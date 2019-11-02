@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using CookBook.CoreProject.Interfaces;
 using CookBook.Domain.Mappers;
 using CookBook.Domain.Models;
@@ -31,14 +33,33 @@ namespace Testing.Mocking.Presentation
         {
             RecipeServiceMock.Setup(s => s.AddAsync(It.IsAny<CreateUpdateRecipeViewModel>(), It.IsAny<int>()))
                 .ReturnsAsync((CreateUpdateRecipeViewModel m, int id) => new Recipe { UserId = id, Id = 1 });
+
             RecipeServiceMock.Setup(s => s.GetAsync(It.IsAny<int>())).ReturnsAsync((int id) => id > 0 
                 ? new Recipe { Id = id, UserId = id, Votes = new List<Vote>{ new Vote { RecipeId = id, UserId = id, Value = 5 } }} 
                 : null);
+
             RecipeServiceMock.Setup(s => s.UpdateAsync(It.IsAny<CreateUpdateRecipeViewModel>(), It.IsAny<int>()))
                 .ReturnsAsync((CreateUpdateRecipeViewModel m, int id) => new Recipe { Id = id, Name = m.Name });
+
             RecipeServiceMock.Setup(s => s.MarkAsDeletedAsync(It.IsAny<int>())).ReturnsAsync((int id) => id > 0);
+
             RecipeServiceMock.Setup(s => s.AddVoteAsync(It.Is<int>(id => id > 0), It.Is<int>(id => id > 0), It.Is<int>(id => id > 0)))
-                .ReturnsAsync((int recipeId, int userId, int voteValue) => new Vote{ RecipeId = recipeId, UserId = userId, Value = voteValue, Recipe = new Recipe { Id = recipeId }});
+                .ReturnsAsync((int recipeId, int userId, int voteValue) => new Vote
+                {
+                    RecipeId = recipeId, 
+                    UserId = userId, 
+                    Value = voteValue, 
+                    Recipe = new Recipe { Id = recipeId }
+                });
+
+            RecipeServiceMock.Setup(s => s.GetPopularRecipesAsync(It.IsAny<int>()))
+                .ReturnsAsync((int count) => Enumerable.Repeat(new Recipe(), 
+                    Math.Max(0, Math.Min(count, MockConstants.TotalNumberOfRecipes))));
+            
+            RecipeServiceMock.Setup(s => s.GetRecentRecipesAsync(It.IsAny<int>()))
+                .ReturnsAsync((int count) => Enumerable.Repeat(new Recipe(),
+                    Math.Max(0, Math.Min(count, MockConstants.TotalNumberOfRecipes))));
+            
             return RecipeServiceMock;
         }
 
