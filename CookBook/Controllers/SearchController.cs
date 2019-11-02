@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -32,6 +33,10 @@ namespace CookBook.Presentation.Controllers
         [HttpGet, Route(""), AllowAnonymous]
         public async Task<IActionResult> Search([FromQuery] string query, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return new OkObjectResult(new List<RecipeBriefDto>());
+            }
             var results = await _searchService.SearchAsync(query, page, pageSize);
             var dtos = results.Select(r => _mapper.Map<RecipeDocument, RecipeBriefDto>(r)).ToList();
             foreach (var dto in dtos)
