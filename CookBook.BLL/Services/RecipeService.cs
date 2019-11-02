@@ -8,6 +8,7 @@ using CookBook.DAL.Data;
 using CookBook.Domain.Enums;
 using CookBook.Domain.Models;
 using CookBook.Domain.ViewModels.RecipeViewModels;
+using CookBook.Queries.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace CookBook.BLL.Services
@@ -37,11 +38,8 @@ namespace CookBook.BLL.Services
 
         private IEnumerable<Tag> GetOrAddTags(List<string> tags)
         {
-            var dbTags = _context.Tags.Where(t => tags.Contains(t.Content)).ToList();
-            var dbTagNames = dbTags.Select(t => t.Content).ToHashSet();
-            var newTags = tags.Where(t => !dbTagNames.Contains(t)).Select(t => new Tag{Content = t}).ToList();
-            dbTags.AddRange(newTags);
-            _context.Tags.AddRange(newTags);
+            var dbTags = _context.Tags.GetAttachableTags(tags).ToList();
+            _context.Tags.AttachRange(dbTags);
             return dbTags;
         }
 
@@ -78,6 +76,15 @@ namespace CookBook.BLL.Services
             _context.Recipes.Update(recipe);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<Vote> AddVoteAsync(int recipeId, int userId, int voteValue)
+        {
+            var recipe = _context.Recipes.Find(recipeId);
+            if (recipe == null) return null;
+            var vote = recipe.AddOrUpdateVote(userId, voteValue);
+            await _context.SaveChangesAsync();
+            return vote;
         }
     }
 }

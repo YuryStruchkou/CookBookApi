@@ -7,11 +7,10 @@ using CookBook.Domain.Mappers;
 using CookBook.Domain.Models;
 using CookBook.Presentation.Controllers;
 using CookBook.Presentation.JWT;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 
-namespace Testing.Mocking
+namespace Testing.Mocking.Presentation
 {
     class AccountMocking : BaseMocking<AccountController, AccountProfile>
     {

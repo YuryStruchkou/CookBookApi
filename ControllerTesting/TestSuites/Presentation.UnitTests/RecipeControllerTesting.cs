@@ -14,9 +14,10 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Moq;
 using Testing.Helpers;
 using Testing.Mocking;
+using Testing.Mocking.Presentation;
 using Xunit;
 
-namespace Testing.TestSuites
+namespace Testing.TestSuites.Presentation.UnitTests
 {
     public class RecipeControllerTesting
     {
@@ -36,7 +37,7 @@ namespace Testing.TestSuites
         {
             var model = CreateDefaultCreateRecipeViewModel();
             var json = (OkObjectResult)await _controller.CreateRecipe(model);
-            var result = (RecipeDto)json.Value;
+            var result = (RecipeDetailsDto)json.Value;
             Assert.NotNull(result);
         }
 
@@ -73,7 +74,7 @@ namespace Testing.TestSuites
         public async Task GetRecipeOk()
         {
             var json = (OkObjectResult)await _controller.GetRecipe(5);
-            var result = (RecipeDto) json.Value;
+            var result = (RecipeDetailsDto) json.Value;
 
             Assert.Equal(5, result.Id);
         }
@@ -98,7 +99,7 @@ namespace Testing.TestSuites
             };
 
             var json = (OkObjectResult) await _controller.UpdateRecipe(model, 1);
-            var result = (RecipeDto) json.Value;
+            var result = (RecipeDetailsDto) json.Value;
 
             Assert.NotNull(result);
         }
@@ -197,6 +198,30 @@ namespace Testing.TestSuites
 
             Assert.Equal((int)HttpStatusCode.Forbidden, error.Code);
             Assert.NotEmpty(error.Errors);
+        }
+
+        [Fact]
+        public async Task AddVoteOk()
+        {
+            var json = (OkObjectResult) await _controller.AddVote(1, 5);
+            var result = (RecipeVoteDto) json.Value;
+
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task GetCurrentUserVoteOk()
+        {
+            var user = SetupClaimsPrincipal();
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = user }
+            };
+
+            var json = (OkObjectResult)await _controller.GetCurrentUserVote(1);
+            var data = (CurrentUserVoteDto)json.Value;
+
+            Assert.True(data.VoteValue > 0);
         }
     }
 }

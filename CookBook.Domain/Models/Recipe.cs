@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CookBook.Domain.Enums;
 
 namespace CookBook.Domain.Models
@@ -31,5 +32,17 @@ namespace CookBook.Domain.Models
         public int? UserId { get; set; }
 
         public virtual UserProfile User { get; set; }
+
+        public Vote AddOrUpdateVote(int userId, int voteValue)
+        {
+            var vote = Votes.SingleOrDefault(v => v.UserId == userId);
+            if (vote == null)
+            {
+                vote = new Vote { UserId = userId };
+                Votes.Add(vote);
+            }
+            vote.Value = voteValue;
+            return vote;
+        }
     }
 }

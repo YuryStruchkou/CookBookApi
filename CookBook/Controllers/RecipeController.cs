@@ -1,5 +1,5 @@
-﻿using System.Net;
-using System.Security.Claims;
+﻿using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using CookBook.CoreProject.Constants;
@@ -38,20 +38,18 @@ namespace CookBook.Presentation.Controllers
         {
             var userId = await _userManager.GetCurrentUserIdAsync(User);
             var recipe = await _recipeService.AddAsync(model, userId);
-            var result = _mapper.Map<Recipe, RecipeDto>(recipe);
+            var result = _mapper.Map<Recipe, RecipeDetailsDto>(recipe);
             return new OkObjectResult(result);
         }
 
-        [HttpGet, Route("{id}")]
+        [HttpGet, Route("{id}"), Authorize(AuthenticationSchemes = "Bearer"), AllowAnonymous]
         public async Task<IActionResult> GetRecipe([FromRoute] int id)
-        {
+        { 
             var recipe = await _recipeService.GetAsync(id);
-            var result = _mapper.Map<Recipe, RecipeDto>(recipe);
-            if (result == null)
-            {
-                return new NotFoundObjectResult(new ErrorDto((int) HttpStatusCode.NotFound, "Recipe not found."));
-            }
-            return new OkObjectResult(result);
+            var result = _mapper.Map<Recipe, RecipeDetailsDto>(recipe);
+            return result != null
+                ? (IActionResult) new OkObjectResult(result)
+                : new NotFoundObjectResult(new ErrorDto((int) HttpStatusCode.NotFound, "Recipe not found."));
         }
 
         [HttpPut, Route("{id}"), Authorize(AuthenticationSchemes = "Bearer")]
@@ -67,7 +65,7 @@ namespace CookBook.Presentation.Controllers
                 return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User id does not match."));
             }
             recipe = await _recipeService.UpdateAsync(model, recipe.Id);
-            var result = _mapper.Map<Recipe, RecipeDto>(recipe);
+            var result = _mapper.Map<Recipe, RecipeDetailsDto>(recipe);
             return new OkObjectResult(result);
         }
 
@@ -85,6 +83,28 @@ namespace CookBook.Presentation.Controllers
             }
             await _recipeService.MarkAsDeletedAsync(id);
             return new NoContentResult();
+        }
+
+        [HttpPost, Route("{id}/vote"), Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> AddVote([FromRoute] int id, [FromQuery] int value)
+        {
+            var userId = await _userManager.GetCurrentUserIdAsync(User);
+            if (!userId.HasValue)
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User does not exist."));
+            }
+            var vote = await _recipeService.AddVoteAsync(id, userId.Value, value);
+            var result = _mapper.Map<Recipe, RecipeVoteDto>(vote.Recipe);
+            return new OkObjectResult(result);
+        }
+
+        [HttpGet, Route("{id}/vote"), Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetCurrentUserVote([FromRoute] int id)
+        {
+            var recipe = await _recipeService.GetAsync(id);
+            var userId = await _userManager.GetCurrentUserIdAsync(User);
+            var voteValue = recipe != null && userId.HasValue ? recipe.Votes.FirstOrDefault(v => v.UserId == userId)?.Value : null;
+            return new OkObjectResult(new CurrentUserVoteDto(voteValue));
         }
     }
 }

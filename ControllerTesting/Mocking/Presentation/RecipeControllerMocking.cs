@@ -1,4 +1,5 @@
-﻿using CookBook.CoreProject.Interfaces;
+﻿using System.Collections.Generic;
+using CookBook.CoreProject.Interfaces;
 using CookBook.Domain.Mappers;
 using CookBook.Domain.Models;
 using CookBook.Domain.ViewModels.RecipeViewModels;
@@ -6,7 +7,7 @@ using CookBook.Presentation.Controllers;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 
-namespace Testing.Mocking
+namespace Testing.Mocking.Presentation
 {
     class RecipeControllerMocking : BaseMocking<RecipeController, RecipeProfile>
     {
@@ -30,10 +31,14 @@ namespace Testing.Mocking
         {
             RecipeServiceMock.Setup(s => s.AddAsync(It.IsAny<CreateUpdateRecipeViewModel>(), It.IsAny<int>()))
                 .ReturnsAsync((CreateUpdateRecipeViewModel m, int id) => new Recipe { UserId = id, Id = 1 });
-            RecipeServiceMock.Setup(s => s.GetAsync(It.IsAny<int>())).ReturnsAsync((int id) => id > 0 ? new Recipe { Id = id, UserId = id } : null );
+            RecipeServiceMock.Setup(s => s.GetAsync(It.IsAny<int>())).ReturnsAsync((int id) => id > 0 
+                ? new Recipe { Id = id, UserId = id, Votes = new List<Vote>{ new Vote { RecipeId = id, UserId = id, Value = 5 } }} 
+                : null);
             RecipeServiceMock.Setup(s => s.UpdateAsync(It.IsAny<CreateUpdateRecipeViewModel>(), It.IsAny<int>()))
                 .ReturnsAsync((CreateUpdateRecipeViewModel m, int id) => new Recipe { Id = id, Name = m.Name });
             RecipeServiceMock.Setup(s => s.MarkAsDeletedAsync(It.IsAny<int>())).ReturnsAsync((int id) => id > 0);
+            RecipeServiceMock.Setup(s => s.AddVoteAsync(It.Is<int>(id => id > 0), It.Is<int>(id => id > 0), It.Is<int>(id => id > 0)))
+                .ReturnsAsync((int recipeId, int userId, int voteValue) => new Vote{ RecipeId = recipeId, UserId = userId, Value = voteValue, Recipe = new Recipe { Id = recipeId }});
             return RecipeServiceMock;
         }
 

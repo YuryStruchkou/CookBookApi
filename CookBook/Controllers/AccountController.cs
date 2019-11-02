@@ -12,10 +12,8 @@ using CookBook.Domain.ResultDtos;
 using CookBook.Domain.ResultDtos.AccountDtos;
 using CookBook.Domain.ViewModels.AccountViewModels;
 using CookBook.Presentation.Filters;
-using CookBook.Presentation.Helpers;
 using CookBook.Presentation.JWT;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -85,7 +83,8 @@ namespace CookBook.Presentation.Controllers
             {
                 JwtToken = jwtToken.Token,
                 ExpiryDate = jwtToken.ExpiryDate,
-                UserName = user.UserName
+                UserName = user.UserName,
+                UserId = user.Id
             });
         }
 
