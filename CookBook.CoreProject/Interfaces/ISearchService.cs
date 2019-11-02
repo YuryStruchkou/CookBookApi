@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using CookBook.Domain.ElasticSearch;
 
 namespace CookBook.CoreProject.Interfaces
@@ -11,6 +13,6 @@ namespace CookBook.CoreProject.Interfaces
 
         Task DeleteRecipeAsync(RecipeDocument recipe);
 
-        
+        Task<IEnumerable<RecipeDocument>> SearchAsync(string searchTerm, int page = 1, int pageSize = 10);
     }
 }
