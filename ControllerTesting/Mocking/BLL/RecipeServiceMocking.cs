@@ -1,7 +1,9 @@
 ﻿using CookBook.BLL.Services;
+using CookBook.CoreProject.Interfaces;
 using CookBook.DAL.Data;
 using CookBook.Domain.Mappers;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 
 namespace Testing.Mocking.BLL
 {
@@ -17,7 +19,7 @@ namespace Testing.Mocking.BLL
         public override RecipeService Setup()
         {
             var mapper = SetupMapper();
-            return new RecipeService(mapper, _context);
+            return new RecipeService(mapper, _context, new Mock<ISearchService>().Object);
         }
 
         public void ClearContext()

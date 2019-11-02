@@ -8,7 +8,9 @@ using CookBook.BLL.Services;
 using CookBook.CoreProject.Constants;
 using CookBook.CoreProject.Helpers;
 using CookBook.CoreProject.Interfaces;
+using CookBook.Domain.ElasticSearch;
 using CookBook.Domain.Mappers;
+using CookBook.Domain.Models;
 using CookBook.Domain.ResultDtos;
 using CookBook.Presentation.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -18,6 +20,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Nest;
+using Policy = CookBook.CoreProject.Constants.Policy;
 
 namespace CookBook.Presentation.Helpers
 {
@@ -86,11 +90,22 @@ namespace CookBook.Presentation.Helpers
             services.AddAutoMapper(typeof(AccountProfile), typeof(RecipeProfile));
         }
 
+        public static void AddElasticSearch(this IServiceCollection services, IConfiguration config)
+        {
+            var url = config["ElasticSearch:Url"];
+            var defaultIndex = config["ElasticSearch:Index"];
+            var settings = new ConnectionSettings(new Uri(url))
+                .DefaultIndex(defaultIndex);
+            var client = new ElasticClient(settings);
+            services.AddSingleton<IElasticClient>(client);
+        }
+
         public static void RegisterCustomServices(this IServiceCollection services)
         {
             services.AddScoped<IRecipeService, RecipeService>();
             services.AddScoped<ICookieService, CookieService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ISearchService, SearchService>();
         }
     }
 }

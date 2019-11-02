@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using CookBook.CoreProject.Interfaces;
 using CookBook.DAL.Data;
+using CookBook.Domain.ElasticSearch;
 using CookBook.Domain.Enums;
 using CookBook.Domain.Helpers;
 using CookBook.Domain.Models;
@@ -18,11 +19,13 @@ namespace CookBook.BLL.Services
     {
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
+        private readonly ISearchService _searchService;
 
-        public RecipeService(IMapper mapper, ApplicationDbContext context)
+        public RecipeService(IMapper mapper, ApplicationDbContext context, ISearchService searchService)
         {
             _mapper = mapper;
             _context = context;
+            _searchService = searchService;
         }
 
         public async Task<Recipe> AddAsync(CreateUpdateRecipeViewModel model, int? userId)
@@ -34,6 +37,7 @@ namespace CookBook.BLL.Services
             recipe.CreationDate = DateTime.Now;
             _context.Recipes.Add(recipe);
             await _context.SaveChangesAsync();
+            await _searchService.AddRecipeAsync(_mapper.Map<Recipe, RecipeDocument>(recipe));
             return recipe;
         }
 
@@ -65,6 +69,7 @@ namespace CookBook.BLL.Services
             recipe.EditDate = DateTime.Now;
             _context.Recipes.Update(recipe);
             await _context.SaveChangesAsync();
+            await _searchService.UpdateRecipeAsync(_mapper.Map<Recipe, RecipeDocument>(recipe));
             return recipe;
         }
 
@@ -76,6 +81,7 @@ namespace CookBook.BLL.Services
             recipe.DeleteDate = DateTime.Now;
             _context.Recipes.Update(recipe);
             await _context.SaveChangesAsync();
+            await _searchService.DeleteRecipeAsync(_mapper.Map<Recipe, RecipeDocument>(recipe));
             return true;
         }
 

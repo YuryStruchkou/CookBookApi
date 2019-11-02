@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using AutoMapper;
+using CookBook.Domain.ElasticSearch;
 using CookBook.Domain.Enums;
 using CookBook.Domain.Helpers;
 using CookBook.Domain.Models;
@@ -24,6 +25,8 @@ namespace CookBook.Domain.Mappers
                 .ForMember(r => r.RecipeVoteData, src => src.MapFrom(r => r));
             CreateMap<Recipe, RecipeBriefDto>()
                 .ForMember(v => v.AverageVote, src => src.MapFrom(r => r.GetAverageVote()));
+            CreateMap<Recipe, RecipeDocument>()
+                .ForMember(r => r.Tags, src => src.MapFrom(r => r.RecipeTags.Select(rt => rt.Tag.Content)));
         }
     }
 }

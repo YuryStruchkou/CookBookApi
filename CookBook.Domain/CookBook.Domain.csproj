@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="8.1.1" />
+    <PackageReference Include="NEST" Version="7.4.0" />
   </ItemGroup>
 
 </Project>

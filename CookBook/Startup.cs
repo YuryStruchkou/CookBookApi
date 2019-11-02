@@ -32,6 +32,7 @@ namespace CookBook.Presentation
             services.AddCors();
             services.AddJwtAuthentication(Configuration);
             services.AddAuthorizationPolicies();
+            services.AddElasticSearch(Configuration);
             services.AddScoped(sp =>
                 new JwtFactory(Configuration["Tokens:Issuer"], Configuration["Tokens:Key"], Convert.ToInt32(Configuration["Tokens:ValidForMinutes"])));
             services.AddScoped(sp =>
