@@ -22,7 +22,8 @@ namespace CookBook.Domain.Mappers
                 .ForMember(r => r.Tags, src => src.MapFrom(r => r.RecipeTags.Select(rt => rt.Tag.Content)))
                 .ForMember(r => r.UserName, src => src.MapFrom(r => r.User.ApplicationUser.UserName))
                 .ForMember(r => r.UserId, src => src.MapFrom(r => r.User.ApplicationUser.Id))
-                .ForMember(r => r.RecipeVoteData, src => src.MapFrom(r => r));
+                .ForMember(r => r.RecipeVoteData, src => src.MapFrom(r => r))
+                .ForMember(r => r.Comments, src => src.MapFrom(r => r.Comments));
             CreateMap<Recipe, RecipeBriefDto>()
                 .ForMember(v => v.AverageVote, src => src.MapFrom(r => r.GetAverageVote()));
             CreateMap<Recipe, RecipeDocument>()

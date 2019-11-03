@@ -28,6 +28,11 @@ namespace Testing.Mocking
             Content = "A very very long description"
         };
 
+        public static readonly Comment DefaultComment = new Comment
+        {
+            Content = "Good stuff"
+        };
+
         public static readonly List<string> DefaultTags = new List<string> {"tag1", "tag2"};
     }
 }

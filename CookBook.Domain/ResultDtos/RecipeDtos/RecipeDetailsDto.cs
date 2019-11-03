@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CookBook.Domain.ResultDtos.CommentDtos;
 
 namespace CookBook.Domain.ResultDtos.RecipeDtos
 {
@@ -28,5 +29,7 @@ namespace CookBook.Domain.ResultDtos.RecipeDtos
         public int UserId { get; set; }
 
         public string RecipeStatus { get; set; }
+
+        public List<CommentDetailsDto> Comments { get; set; }
     }
 }
