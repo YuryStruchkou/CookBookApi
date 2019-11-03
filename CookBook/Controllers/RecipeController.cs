@@ -47,6 +47,10 @@ namespace CookBook.Presentation.Controllers
         { 
             var recipe = await _recipeService.GetAsync(id);
             var result = _mapper.Map<Recipe, RecipeDetailsDto>(recipe);
+            if (result != null)
+            {
+                result.Comments = result.Comments?.OrderByDescending(c => c.CreationDate).ToList();
+            }
             return result != null
                 ? (IActionResult) new OkObjectResult(result)
                 : new NotFoundObjectResult(new ErrorDto((int) HttpStatusCode.NotFound, "Recipe not found."));

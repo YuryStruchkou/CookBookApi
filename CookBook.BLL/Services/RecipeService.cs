@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using CookBook.CoreProject.Interfaces;
 using CookBook.DAL.Data;
 using CookBook.Domain.ElasticSearch;
@@ -12,6 +8,10 @@ using CookBook.Domain.Models;
 using CookBook.Domain.ViewModels.RecipeViewModels;
 using CookBook.Queries.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CookBook.BLL.Services
 {
