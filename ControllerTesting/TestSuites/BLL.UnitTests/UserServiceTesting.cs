@@ -16,7 +16,7 @@ namespace Testing.TestSuites.BLL.UnitTests
         public UserServiceTesting()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase("test")
+                .UseInMemoryDatabase("testUsers")
                 .EnableSensitiveDataLogging()
                 .Options;
             _mocker = new UserServiceMocking(options);

@@ -22,7 +22,7 @@ namespace Testing.TestSuites.BLL.UnitTests
         public RecipeServiceTesting()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase("test")
+                .UseInMemoryDatabase("testRecipes")
                 .EnableSensitiveDataLogging()
                 .Options;
             _mocker = new RecipeServiceMocking(options);

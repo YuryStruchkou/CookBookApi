@@ -8,9 +8,7 @@ using CookBook.BLL.Services;
 using CookBook.CoreProject.Constants;
 using CookBook.CoreProject.Helpers;
 using CookBook.CoreProject.Interfaces;
-using CookBook.Domain.ElasticSearch;
 using CookBook.Domain.Mappers;
-using CookBook.Domain.Models;
 using CookBook.Domain.ResultDtos;
 using CookBook.Presentation.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -106,6 +104,7 @@ namespace CookBook.Presentation.Helpers
             services.AddScoped<ICookieService, CookieService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ISearchService, SearchService>();
+            services.AddScoped<ICommentService, CommentService>();
         }
     }
 }

@@ -5,9 +5,7 @@ using System.Threading.Tasks;
 using CookBook.CoreProject.Helpers;
 using CookBook.Domain.ResultDtos;
 using CookBook.Domain.ResultDtos.CommentDtos;
-using CookBook.Domain.ResultDtos.RecipeDtos;
 using CookBook.Domain.ViewModels.CommentViewModels;
-using CookBook.Domain.ViewModels.RecipeViewModels;
 using CookBook.Presentation.Controllers;
 using CookBook.Presentation.ObjectResults;
 using Microsoft.AspNetCore.Http;
@@ -43,11 +41,20 @@ namespace Testing.TestSuites.Presentation.UnitTests
             Assert.NotNull(result);
         }
 
-        private CreateUpdateCommentViewModel CreateDefaultCreateCommentViewModel()
+        private UpdateCommentViewModel CreateDefaultUpdateCommentViewModel()
         {
-            return new CreateUpdateCommentViewModel
+            return new UpdateCommentViewModel
             {
                 Content = MockConstants.DefaultComment.Content
+            };
+        }
+
+        private CreateCommentViewModel CreateDefaultCreateCommentViewModel()
+        {
+            return new CreateCommentViewModel
+            {
+                Content = MockConstants.DefaultComment.Content,
+                RecipeId = MockConstants.DefaultRecipe.Id
             };
         }
 
@@ -60,7 +67,7 @@ namespace Testing.TestSuites.Presentation.UnitTests
         [Fact]
         public void CreateCommentInvalidModel()
         {
-            var model = new CreateUpdateCommentViewModel();
+            var model = new CreateCommentViewModel();
             _context.ModelState.Validate(model);
 
             var error = AttributeHelper.ExecuteModelValidation(_context);
@@ -91,7 +98,7 @@ namespace Testing.TestSuites.Presentation.UnitTests
         [Fact]
         public async Task UpdateCommentOk()
         {
-            var model = CreateDefaultCreateCommentViewModel();
+            var model = CreateDefaultUpdateCommentViewModel();
             _controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext { User = SetupClaimsPrincipal() }
@@ -116,7 +123,7 @@ namespace Testing.TestSuites.Presentation.UnitTests
         [Fact]
         public async Task UpdateCommentWrongUserId()
         {
-            var model = CreateDefaultCreateCommentViewModel();
+            var model = CreateDefaultUpdateCommentViewModel();
             var user = SetupClaimsPrincipal();
             _controller.ControllerContext = new ControllerContext
             {
@@ -133,7 +140,7 @@ namespace Testing.TestSuites.Presentation.UnitTests
         [Fact]
         public async Task UpdateCommentNotFound()
         {
-            var model = CreateDefaultCreateCommentViewModel();
+            var model = CreateDefaultUpdateCommentViewModel();
             _controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext { User = SetupClaimsPrincipal() }

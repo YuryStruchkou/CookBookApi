@@ -28,8 +28,8 @@ namespace Testing.Mocking.Presentation
 
         private Mock<ICommentService> MockCommentService()
         {
-            CommentServiceMock.Setup(s => s.AddAsync(It.IsAny<CreateUpdateCommentViewModel>(), It.IsAny<int>()))
-                .ReturnsAsync((CreateUpdateCommentViewModel m, int id) => new Comment
+            CommentServiceMock.Setup(s => s.AddAsync(It.IsAny<CreateCommentViewModel>(), It.IsAny<int>()))
+                .ReturnsAsync((CreateCommentViewModel m, int id) => new Comment
                 {
                     UserId = id, 
                     Id = 1,
@@ -45,8 +45,8 @@ namespace Testing.Mocking.Presentation
                 }
                 : null);
 
-            CommentServiceMock.Setup(s => s.UpdateAsync(It.IsAny<CreateUpdateCommentViewModel>(), It.IsAny<int>()))
-                .ReturnsAsync((CreateUpdateCommentViewModel m, int id) => new Comment
+            CommentServiceMock.Setup(s => s.UpdateAsync(It.IsAny<UpdateCommentViewModel>(), It.IsAny<int>()))
+                .ReturnsAsync((UpdateCommentViewModel m, int id) => new Comment
                 {
                     Id = id,
                     Content = m.Content

@@ -33,10 +33,15 @@ namespace CookBook.Presentation.Controllers
         }
 
         [HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> CreateComment([FromBody] CreateUpdateCommentViewModel model)
+        public async Task<IActionResult> CreateComment([FromBody] CreateCommentViewModel model)
         {
             var userId = await _userManager.GetCurrentUserIdAsync(User);
             var comment = await _commentService.AddAsync(model, userId);
+            if (comment == null)
+            {
+                return new BadRequestObjectResult(new ErrorDto((int) HttpStatusCode.BadRequest, 
+                    "Cannot create comment for recipe that does not exist."));
+            }
             var result = _mapper.Map<Comment, CommentDetailsDto>(comment);
             return new OkObjectResult(result);
         }
@@ -52,7 +57,7 @@ namespace CookBook.Presentation.Controllers
         }
 
         [HttpPut, Route("{id}"), Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> UpdateComment([FromBody] CreateUpdateCommentViewModel model, [FromRoute] int id)
+        public async Task<IActionResult> UpdateComment([FromBody] UpdateCommentViewModel model, [FromRoute] int id)
         {
             var comment = await _commentService.GetAsync(id);
             if (comment == null)
