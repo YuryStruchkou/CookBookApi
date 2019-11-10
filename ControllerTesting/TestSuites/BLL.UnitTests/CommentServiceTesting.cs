@@ -147,6 +147,7 @@ namespace Testing.TestSuites.BLL.UnitTests
 
         public async Task DisposeAsync()
         {
+            await Task.CompletedTask;
         }
     }
 }

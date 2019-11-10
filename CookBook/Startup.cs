@@ -42,18 +42,22 @@ namespace CookBook.Presentation
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.RegisterCustomServices();
             services.AddAutoMapperProfiles();
-            services.AddMvc();
+            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, RoleManager<IdentityRole<int>> roleManager)
         {
             roleManager.SeedRoles().Wait();
+            app.UseRouting();
             app.UseExceptionMiddleware();
             app.UseCors(builder => builder.WithOrigins(Configuration.GetSection("Cors:Origins").Get<string[]>())
                 .AllowCredentials().AllowAnyHeader().AllowAnyMethod());
             app.UseAuthentication();
-            app.UseMvc();
+            app.UseAuthorization();
+            app.UseEndpoints(endpoints => {
+                endpoints.MapControllers();
+            });
         }
     }
 }

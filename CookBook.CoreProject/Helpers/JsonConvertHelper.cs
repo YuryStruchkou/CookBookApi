@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+﻿using System.Text.Json;
 
 namespace CookBook.CoreProject.Helpers
 {
@@ -7,9 +6,9 @@ namespace CookBook.CoreProject.Helpers
     {
         public static string SerializeObjectCamelCase(object value)
         {
-            return JsonConvert.SerializeObject(value, new JsonSerializerSettings
+            return JsonSerializer.Serialize(value, new JsonSerializerOptions
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
         }
     }
