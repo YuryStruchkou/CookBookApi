@@ -7,5 +7,7 @@ namespace CookBook.Presentation.JWT
         public string Token { get; set; }
 
         public DateTime ExpiryDate { get; set; }
+
+        public string UserRole { get; set; }
     }
 }

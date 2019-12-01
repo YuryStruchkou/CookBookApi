@@ -84,7 +84,8 @@ namespace CookBook.Presentation.Controllers
                 JwtToken = jwtToken.Token,
                 ExpiryDate = jwtToken.ExpiryDate,
                 UserName = user.UserName,
-                UserId = user.Id
+                UserId = user.Id,
+                UserRole = jwtToken.UserRole
             });
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
@@ -34,7 +35,8 @@ namespace CookBook.Presentation.JWT
             return new JwtToken
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(tokenOptions),
-                ExpiryDate = expiryDate
+                ExpiryDate = expiryDate, 
+                UserRole = tokenOptions.Claims.First(c => c.Type == ClaimsIdentity.DefaultRoleClaimType).Value
             };
         }
     }
