@@ -23,5 +23,8 @@ namespace CookBook.Domain.ViewModels.AccountViewModels
         [DataType(DataType.Password)]
         [Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [Display(Name = "Avatar")]
+        public string ImagePublicId { get; set; }
     }
 }

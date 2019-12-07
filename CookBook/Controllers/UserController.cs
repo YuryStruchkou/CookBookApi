@@ -8,6 +8,7 @@ using CookBook.CoreProject.Interfaces;
 using CookBook.Domain.Models;
 using CookBook.Domain.ResultDtos;
 using CookBook.Domain.ResultDtos.UserDetailsDtos;
+using CookBook.Domain.ViewModels.UserViewModels;
 using CookBook.Presentation.ObjectResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -38,6 +39,23 @@ namespace CookBook.Presentation.Controllers
             {
                 return new NotFoundObjectResult(new ErrorDto((int)HttpStatusCode.NotFound, "User does not exist."));
             }
+            var result = _mapper.Map<UserProfile, UserDetailsDto>(user);
+            return new OkObjectResult(result);
+        }
+
+        [HttpPatch("{id}"), Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> UpdateUser([FromRoute] int id, [FromBody] UpdateUserViewModel model)
+        {
+            var user = await _userService.GetAsync(id);
+            if (user == null)
+            {
+                return new NotFoundObjectResult(new ErrorDto((int)HttpStatusCode.NotFound, "User not found."));
+            }
+            if (!User.IsInRole(UserRoleNames.Admin) && user.UserId != await _userManager.GetCurrentUserIdAsync(User))
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User id does not match."));
+            }
+            user = await _userService.UpdateAsync(model, user.UserId);
             var result = _mapper.Map<UserProfile, UserDetailsDto>(user);
             return new OkObjectResult(result);
         }

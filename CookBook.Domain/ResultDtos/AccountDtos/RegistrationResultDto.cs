@@ -10,6 +10,6 @@
 
         public string UserStatus { get; set; }
 
-        public string AvatarUrl { get; set; }
+        public string ImagePublicId { get; set; }
     }
 }

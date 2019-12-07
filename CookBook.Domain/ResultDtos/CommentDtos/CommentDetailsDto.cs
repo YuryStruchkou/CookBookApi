@@ -15,5 +15,7 @@ namespace CookBook.Domain.ResultDtos.CommentDtos
         public string UserName { get; set; }
 
         public int UserId { get; set; }
+
+        public string ImagePublicId { get; set; }
     }
 }

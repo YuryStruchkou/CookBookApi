@@ -12,7 +12,8 @@ namespace CookBook.Domain.Mappers
             CreateMap<CreateCommentViewModel, Comment>();
             CreateMap<Comment, CommentDetailsDto>()
                 .ForMember(c => c.UserId, src => src.MapFrom(c => c.User.UserId))
-                .ForMember(c => c.UserName, src => src.MapFrom(c => c.User.ApplicationUser.UserName));
+                .ForMember(c => c.UserName, src => src.MapFrom(c => c.User.ApplicationUser.UserName))
+                .ForMember(c => c.ImagePublicId, src => src.MapFrom(c => c.User.ImagePublicId));
         }
     }
 }

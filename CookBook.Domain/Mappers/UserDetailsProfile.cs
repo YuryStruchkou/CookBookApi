@@ -2,6 +2,7 @@
 using AutoMapper;
 using CookBook.Domain.Models;
 using CookBook.Domain.ResultDtos.UserDetailsDtos;
+using CookBook.Domain.ViewModels.UserViewModels;
 
 namespace CookBook.Domain.Mappers
 {
@@ -16,6 +17,8 @@ namespace CookBook.Domain.Mappers
                     .SelectMany(r => r.Votes)
                     .DefaultIfEmpty(new Vote())
                     .Average(v => v.Value)));
+
+            CreateMap<UpdateUserViewModel, UserProfile>();
         }
     }
 }

@@ -14,6 +14,8 @@ namespace CookBook.Domain.ViewModels.RecipeViewModels
         [Required]
         public string Content { get; set; }
 
+        public string ImagePublicId { get; set; }
+
         public List<string> Tags { get; set; } = new List<string>();
     }
 }

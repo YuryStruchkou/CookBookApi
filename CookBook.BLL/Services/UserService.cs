@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CookBook.CoreProject.Interfaces;
 using CookBook.DAL.Data;
+using CookBook.Domain.ElasticSearch;
 using CookBook.Domain.Enums;
 using CookBook.Domain.Models;
+using CookBook.Domain.ViewModels.UserViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace CookBook.BLL.Services
@@ -21,6 +24,19 @@ namespace CookBook.BLL.Services
         public async Task<UserProfile> GetAsync(int id)
         {
             var user = await _dbContext.UserProfiles.FindAsync(id);
+            return user;
+        }
+
+        public async Task<UserProfile> UpdateAsync(UpdateUserViewModel model, int id)
+        {
+            var user = _dbContext.UserProfiles.SingleOrDefault(u => u.UserId == id);
+            if (user == null)
+            {
+                return null;
+            }
+            user.ImagePublicId = model.ImagePublicId;
+            _dbContext.UserProfiles.Update(user);
+            await _dbContext.SaveChangesAsync();
             return user;
         }
 

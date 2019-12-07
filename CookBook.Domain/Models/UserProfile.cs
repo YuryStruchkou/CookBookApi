@@ -9,7 +9,7 @@ namespace CookBook.Domain.Models
 
         public virtual ApplicationUser ApplicationUser { get; set; }
 
-        public string AvatarUrl { get; set; }
+        public string ImagePublicId { get; set; }
 
         public bool IsMuted { get; set; }
 

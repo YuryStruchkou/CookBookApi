@@ -14,6 +14,8 @@ namespace CookBook.Domain.ResultDtos.RecipeDtos
 
         public string Content { get; set; }
 
+        public string ImagePublicId { get; set; }
+
         public List<string> Tags { get; set; }
 
         public DateTime CreationDate { get; set; }

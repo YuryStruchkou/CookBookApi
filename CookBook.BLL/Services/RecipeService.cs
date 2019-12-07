@@ -66,6 +66,7 @@ namespace CookBook.BLL.Services
             recipe.Name = model.Name;
             recipe.Content = model.Content;
             recipe.Description = model.Description;
+            recipe.ImagePublicId = model.ImagePublicId;
             recipe.EditDate = DateTime.Now;
             _context.Recipes.Update(recipe);
             await _context.SaveChangesAsync();

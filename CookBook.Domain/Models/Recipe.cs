@@ -21,6 +21,8 @@ namespace CookBook.Domain.Models
 
         public string Description { get; set; }
 
+        public string ImagePublicId { get; set; }
+
         public RecipeStatus RecipeStatus { get; set; }
 
         public virtual ICollection<RecipeTag> RecipeTags { get; set; } = new HashSet<RecipeTag>();

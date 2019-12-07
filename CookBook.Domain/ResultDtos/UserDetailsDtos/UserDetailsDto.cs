@@ -10,7 +10,7 @@ namespace CookBook.Domain.ResultDtos.UserDetailsDtos
 
         public string UserName { get; set; }
 
-        public string AvatarUrl { get; set; }
+        public string ImagePublicId { get; set; }
 
         public double AverageVote { get; set; }
 
