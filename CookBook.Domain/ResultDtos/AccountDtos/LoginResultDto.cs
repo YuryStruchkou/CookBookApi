@@ -13,5 +13,7 @@ namespace CookBook.Domain.ResultDtos.AccountDtos
         public int UserId { get; set; }
 
         public string UserRole { get; set; }
+
+        public bool IsMuted { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using AutoMapper;
 using CookBook.CoreProject.Constants;
 using CookBook.CoreProject.Helpers;
 using CookBook.CoreProject.Interfaces;
+using CookBook.Domain.Helpers;
 using CookBook.Domain.Models;
 using CookBook.Domain.ResultDtos;
 using CookBook.Domain.ResultDtos.UserDetailsDtos;
@@ -51,9 +52,14 @@ namespace CookBook.Presentation.Controllers
             {
                 return new NotFoundObjectResult(new ErrorDto((int)HttpStatusCode.NotFound, "User not found."));
             }
-            if (!User.IsInRole(UserRoleNames.Admin) && user.UserId != await _userManager.GetCurrentUserIdAsync(User))
+            var currentUser = await _userManager.GetCurrentUserAsync(User);
+            if (!User.IsInRole(UserRoleNames.Admin) && user.UserId != currentUser.Id)
             {
                 return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User id does not match."));
+            }
+            if (currentUser.IsBlockedOrDeleted())
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User is blocked or deleted."));
             }
             user = await _userService.UpdateAsync(model, user.UserId);
             var result = _mapper.Map<UserProfile, UserDetailsDto>(user);
@@ -65,16 +71,25 @@ namespace CookBook.Presentation.Controllers
         {
             var users = await _userService.GetAllAsync();
             var result = users.Select(_mapper.Map<UserProfile, UserDetailsDto>);
+            var currentUser = await _userManager.GetCurrentUserAsync(User);
+            if (currentUser.IsBlockedOrDeleted())
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User is blocked or deleted."));
+            }
             return new OkObjectResult(result);
         }
 
         [HttpPatch("{id}/block"), Authorize(AuthenticationSchemes = "Bearer", Policy = Policy.ApiAdmin)]
         public async Task<IActionResult> BlockUser([FromRoute] int id)
         {
-            var currentUserId = await _userManager.GetCurrentUserIdAsync(User);
-            if (currentUserId == id)
+            var currentUser = await _userManager.GetCurrentUserAsync(User);
+            if (currentUser.Id == id)
             {
                 return new ForbiddenObjectResult(new ErrorDto((int) HttpStatusCode.Forbidden, "Operation cannot be performed for current user."));
+            }
+            if (currentUser.IsBlockedOrDeleted())
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User is blocked or deleted."));
             }
             var user = await _userService.BlockAsync(id);
             if (user == null)
@@ -88,10 +103,14 @@ namespace CookBook.Presentation.Controllers
         [HttpPatch("{id}/mute"), Authorize(AuthenticationSchemes = "Bearer", Policy = Policy.ApiAdmin)]
         public async Task<IActionResult> MuteUser([FromRoute] int id)
         {
-            var currentUserId = await _userManager.GetCurrentUserIdAsync(User);
-            if (currentUserId == id)
+            var currentUser = await _userManager.GetCurrentUserAsync(User);
+            if (currentUser.Id == id)
             {
                 return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "Operation cannot be performed for current user."));
+            }
+            if (currentUser.IsBlockedOrDeleted())
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User is blocked or deleted."));
             }
             var user = await _userService.MuteAsync(id);
             if (user == null)
@@ -105,10 +124,14 @@ namespace CookBook.Presentation.Controllers
         [HttpPatch("{id}/restore"), Authorize(AuthenticationSchemes = "Bearer", Policy = Policy.ApiAdmin)]
         public async Task<IActionResult> RestoreUser([FromRoute] int id)
         {
-            var currentUserId = await _userManager.GetCurrentUserIdAsync(User);
-            if (currentUserId == id)
+            var currentUser = await _userManager.GetCurrentUserAsync(User);
+            if (currentUser.Id == id)
             {
                 return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "Operation cannot be performed for current user."));
+            }
+            if (currentUser.IsBlockedOrDeleted())
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User is blocked or deleted."));
             }
             var user = await _userService.RestoreAsync(id);
             if (user == null)
@@ -122,10 +145,14 @@ namespace CookBook.Presentation.Controllers
         [HttpDelete("{id}"), Authorize(AuthenticationSchemes = "Bearer", Policy = Policy.ApiAdmin)]
         public async Task<IActionResult> DeleteUser([FromRoute] int id)
         {
-            var currentUserId = await _userManager.GetCurrentUserIdAsync(User);
-            if (currentUserId == id)
+            var currentUser = await _userManager.GetCurrentUserAsync(User);
+            if (currentUser.Id == id)
             {
                 return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "Operation cannot be performed for current user."));
+            }
+            if (currentUser.IsBlockedOrDeleted())
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User is blocked or deleted."));
             }
             var user = await _userService.MarkAsDeletedAsync(id);
             if (user == null)

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using CookBook.CoreProject.Constants;
 using CookBook.CoreProject.Interfaces;
+using CookBook.Domain.Enums;
 using CookBook.Domain.Models;
 using CookBook.Domain.ResultDtos;
 using CookBook.Domain.ResultDtos.AccountDtos;
@@ -62,6 +63,14 @@ namespace CookBook.Presentation.Controllers
             {
                 return new BadRequestObjectResult(new ErrorDto((int) HttpStatusCode.BadRequest, "Incorrect username and/or password."));
             }
+            if (user.UserProfile.UserStatus == UserStatus.Deleted)
+            {
+                return new BadRequestObjectResult(new ErrorDto((int) HttpStatusCode.Unauthorized, "This user was deleted."));
+            }
+            if (user.UserProfile.UserStatus == UserStatus.Blocked)
+            {
+                return new BadRequestObjectResult(new ErrorDto((int)HttpStatusCode.Unauthorized, "This user was blocked."));
+            }
             return await GenerateLoginResponse(user);
         }
 
@@ -85,7 +94,8 @@ namespace CookBook.Presentation.Controllers
                 ExpiryDate = jwtToken.ExpiryDate,
                 UserName = user.UserName,
                 UserId = user.Id,
-                UserRole = jwtToken.UserRole
+                UserRole = jwtToken.UserRole,
+                IsMuted = user.UserProfile.IsMuted
             });
         }
 
@@ -119,7 +129,8 @@ namespace CookBook.Presentation.Controllers
         {
             var user = await _userManager.FindByNameAsync(model.UserName);
             var userToken = GetRefreshToken(user);
-            if (userToken == null)
+            if (userToken == null || user.UserProfile.UserStatus == UserStatus.Deleted ||
+                user.UserProfile.UserStatus == UserStatus.Blocked)
             {
                 return new UnauthorizedObjectResult(new ErrorDto((int)HttpStatusCode.Unauthorized, "Incorrect username or refresh token."));
             }

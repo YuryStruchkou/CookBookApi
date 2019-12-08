@@ -24,7 +24,7 @@ namespace CookBook.BLL.Services
         public async Task<UserProfile> GetAsync(int id)
         {
             var user = await _dbContext.UserProfiles.FindAsync(id);
-            return user;
+            return user.UserStatus != UserStatus.Deleted ? user : null;
         }
 
         public async Task<UserProfile> UpdateAsync(UpdateUserViewModel model, int id)

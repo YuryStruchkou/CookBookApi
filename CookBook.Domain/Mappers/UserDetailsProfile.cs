@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using AutoMapper;
+using CookBook.Domain.Enums;
 using CookBook.Domain.Models;
 using CookBook.Domain.ResultDtos.UserDetailsDtos;
 using CookBook.Domain.ViewModels.UserViewModels;
@@ -16,7 +17,8 @@ namespace CookBook.Domain.Mappers
                 .ForMember(u => u.AverageVote, src => src.MapFrom(u => u.Recipes
                     .SelectMany(r => r.Votes)
                     .DefaultIfEmpty(new Vote())
-                    .Average(v => v.Value)));
+                    .Average(v => v.Value)))
+                .ForMember(u => u.Recipes, src => src.MapFrom(u => u.Recipes.Where(r => r.RecipeStatus != RecipeStatus.Deleted)));
 
             CreateMap<UpdateUserViewModel, UserProfile>();
         }

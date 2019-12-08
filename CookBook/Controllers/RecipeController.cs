@@ -5,6 +5,7 @@ using AutoMapper;
 using CookBook.CoreProject.Constants;
 using CookBook.CoreProject.Helpers;
 using CookBook.CoreProject.Interfaces;
+using CookBook.Domain.Helpers;
 using CookBook.Domain.Models;
 using CookBook.Domain.ResultDtos;
 using CookBook.Domain.ResultDtos.RecipeDtos;
@@ -36,6 +37,11 @@ namespace CookBook.Presentation.Controllers
         [HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> CreateRecipe([FromBody] CreateUpdateRecipeViewModel model)
         {
+            var currentUser = await _userManager.GetCurrentUserAsync(User);
+            if (currentUser.IsBlockedOrDeleted())
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User is blocked or deleted."));
+            }
             var userId = await _userManager.GetCurrentUserIdAsync(User);
             var recipe = await _recipeService.AddAsync(model, userId);
             var result = _mapper.Map<Recipe, RecipeDetailsDto>(recipe);
@@ -64,7 +70,12 @@ namespace CookBook.Presentation.Controllers
             {
                 return new NotFoundObjectResult(new ErrorDto((int)HttpStatusCode.NotFound, "Recipe not found."));
             }
-            if (!User.IsInRole(UserRoleNames.Admin) && recipe.UserId != await _userManager.GetCurrentUserIdAsync(User))
+            var currentUser = await _userManager.GetCurrentUserAsync(User);
+            if (currentUser.IsBlockedOrDeleted())
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User is blocked or deleted."));
+            }
+            if (!User.IsInRole(UserRoleNames.Admin) && recipe.UserId != currentUser.Id)
             {
                 return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User id does not match."));
             }
@@ -81,7 +92,12 @@ namespace CookBook.Presentation.Controllers
             {
                 return new NotFoundObjectResult(new ErrorDto((int) HttpStatusCode.NotFound, "Recipe not found."));
             }
-            if (!User.IsInRole(UserRoleNames.Admin) && recipe.UserId != await _userManager.GetCurrentUserIdAsync(User))
+            var currentUser = await _userManager.GetCurrentUserAsync(User);
+            if (currentUser.IsBlockedOrDeleted())
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User is blocked or deleted."));
+            }
+            if (!User.IsInRole(UserRoleNames.Admin) && recipe.UserId != currentUser.Id)
             {
                 return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User id does not match."));
             }
@@ -92,12 +108,16 @@ namespace CookBook.Presentation.Controllers
         [HttpPost, Route("{id}/vote"), Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddVote([FromRoute] int id, [FromQuery] int value)
         {
-            var userId = await _userManager.GetCurrentUserIdAsync(User);
-            if (!userId.HasValue)
+            var currentUser = await _userManager.GetCurrentUserAsync(User);
+            if (currentUser == null)
             {
                 return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User does not exist."));
             }
-            var vote = await _recipeService.AddVoteAsync(id, userId.Value, value);
+            if (currentUser.IsBlockedOrDeleted())
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User is blocked or deleted."));
+            }
+            var vote = await _recipeService.AddVoteAsync(id, currentUser.Id, value);
             var result = _mapper.Map<Recipe, RecipeVoteDto>(vote.Recipe);
             return new OkObjectResult(result);
         }

@@ -4,6 +4,7 @@ using AutoMapper;
 using CookBook.CoreProject.Constants;
 using CookBook.CoreProject.Helpers;
 using CookBook.CoreProject.Interfaces;
+using CookBook.Domain.Helpers;
 using CookBook.Domain.Models;
 using CookBook.Domain.ResultDtos;
 using CookBook.Domain.ResultDtos.CommentDtos;
@@ -35,8 +36,16 @@ namespace CookBook.Presentation.Controllers
         [HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> CreateComment([FromBody] CreateCommentViewModel model)
         {
-            var userId = await _userManager.GetCurrentUserIdAsync(User);
-            var comment = await _commentService.AddAsync(model, userId);
+            var currentUser = await _userManager.GetCurrentUserAsync(User);
+            if (currentUser.UserProfile.IsMuted)
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User is muted."));
+            }
+            if (currentUser.IsBlockedOrDeleted())
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User is blocked or deleted."));
+            }
+            var comment = await _commentService.AddAsync(model, currentUser.Id);
             if (comment == null)
             {
                 return new BadRequestObjectResult(new ErrorDto((int) HttpStatusCode.BadRequest, 
@@ -64,6 +73,15 @@ namespace CookBook.Presentation.Controllers
             {
                 return new NotFoundObjectResult(new ErrorDto((int)HttpStatusCode.NotFound, "Comment not found."));
             }
+            var currentUser = await _userManager.GetCurrentUserAsync(User);
+            if (currentUser.UserProfile.IsMuted)
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User is muted."));
+            }
+            if (currentUser.IsBlockedOrDeleted())
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User is blocked or deleted."));
+            }
             if (!User.IsInRole(UserRoleNames.Admin) && comment.UserId != await _userManager.GetCurrentUserIdAsync(User))
             {
                 return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User id does not match."));
@@ -80,6 +98,11 @@ namespace CookBook.Presentation.Controllers
             if (comment == null)
             {
                 return new NotFoundObjectResult(new ErrorDto((int)HttpStatusCode.NotFound, "Comment not found."));
+            }
+            var currentUser = await _userManager.GetCurrentUserAsync(User);
+            if (currentUser.IsBlockedOrDeleted())
+            {
+                return new ForbiddenObjectResult(new ErrorDto((int)HttpStatusCode.Forbidden, "User is blocked or deleted."));
             }
             if (!User.IsInRole(UserRoleNames.Admin) && comment.UserId != await _userManager.GetCurrentUserIdAsync(User))
             {
